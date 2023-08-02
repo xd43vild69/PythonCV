@@ -40,6 +40,14 @@ def loop_rotate(image, num_rotations):
 
 def loop_crop(image, num_crops):
     for j in range(num_crops):
+
+        #check image above 512 to avoid noise        
+        height = image.shape[0]
+        width = image.shape[1]
+
+        if(height == width and height == 512):
+            return
+
         cropped_image = random_crop(image, 512)
         cropped_image_path = os.path.join(output_dir, f"cro{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
         cv2.imwrite(cropped_image_path, cropped_image)
@@ -131,7 +139,7 @@ try:
         loop_brightness(image, num_brightnesses)
 
         # Perform specified flip
-        
+        loop_flip(image)
 
     print("Data augmentation completed.")
 
