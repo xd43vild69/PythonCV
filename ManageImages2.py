@@ -36,7 +36,6 @@ def loop_rotate(image, num_rotations):
         rotated_image = rotate_image(image, angle)
         rotated_image_path = os.path.join(output_dir, f"rot{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
         cv2.imwrite(rotated_image_path, rotated_image)
-        loop_flip(rotated_image)
         print(f"Saved rotated image: {rotated_image_path}")
 
 def loop_crop(image, num_crops):
@@ -44,24 +43,32 @@ def loop_crop(image, num_crops):
         cropped_image = random_crop(image, 512)
         cropped_image_path = os.path.join(output_dir, f"cro{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
         cv2.imwrite(cropped_image_path, cropped_image)
-        loop_flip(cropped_image)
         print(f"Saved cropped image: {cropped_image_path}")
+
+def loop_contrast_2(image):
+    contrast = 14
+    for j in range(2):            
+        contrasted_image = adjust_brightness_contrast(image, contrast=contrast)
+        contrasted_image_path = os.path.join(output_dir, f"contrast_{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
+        cv2.imwrite(contrasted_image_path, contrasted_image)
+        print(f"Saved contrast-adjusted image: {contrasted_image_path}")
+        contrast = contrast * -1
 
 def loop_contrast(image, num_contrasts):
     for j in range(num_contrasts):
-            contrast = random.uniform(0.2, 2.0)
-            contrasted_image = adjust_brightness_contrast(image, contrast=contrast)
-            contrasted_image_path = os.path.join(output_dir, f"contrast_{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
-            cv2.imwrite(contrasted_image_path, contrasted_image)
-            print(f"Saved contrast-adjusted image: {contrasted_image_path}")
+        contrast = 14 #, random.uniform(0.2, 2.0)
+        contrasted_image = adjust_brightness_contrast(image, contrast=contrast)
+        contrasted_image_path = os.path.join(output_dir, f"contrast_{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
+        cv2.imwrite(contrasted_image_path, contrasted_image)
+        print(f"Saved contrast-adjusted image: {contrasted_image_path}")
 
 def loop_brightness(image, num_brightnesses):
     for j in range(num_brightnesses):
-            brightness = random.uniform(-100, 100)
-            brightened_image = adjust_brightness_contrast(image, brightness=brightness)
-            brightened_image_path = os.path.join(output_dir, f"brightness_{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
-            cv2.imwrite(brightened_image_path, brightened_image)
-            print(f"Saved brightness-adjusted image: {brightened_image_path}")
+        brightness = random.uniform(-100, 100)
+        brightened_image = adjust_brightness_contrast(image, brightness=brightness)
+        brightened_image_path = os.path.join(output_dir, f"brightness_{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
+        cv2.imwrite(brightened_image_path, brightened_image)
+        print(f"Saved brightness-adjusted image: {brightened_image_path}")
 
 def loop_flip(image):
     flipped_image = flip_image(image)
@@ -94,7 +101,7 @@ for format in image_formats:
 # Get user input for data augmentation parameters
 num_rotations = 2 #int(input("Enter the number of rotations for each image: "))
 num_crops = 6 #int(input("Enter the number of random crops for each image: "))
-num_contrasts = 0 #int(input("Enter the number of contrast adjustments for each image: "))
+num_contrasts = 1 #int(input("Enter the number of contrast adjustments for each image: "))
 num_brightnesses = 0 #int(input("Enter the number of brightness adjustments for each image: "))
 
 print("Processing images...")
@@ -118,7 +125,7 @@ try:
         loop_crop(image, num_crops)
 
         # Perform specified number of contrast adjustments and save copies
-        loop_contrast(image, num_contrasts)
+        loop_contrast_2(image)
 
         # Perform specified number of brightness adjustments and save copies
         loop_brightness(image, num_brightnesses)
