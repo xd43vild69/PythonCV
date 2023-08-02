@@ -55,7 +55,7 @@ for format in image_formats:
 num_rotations = 2 #int(input("Enter the number of rotations for each image: "))
 num_crops = 4 #int(input("Enter the number of random crops for each image: "))
 num_contrasts = 0 #int(input("Enter the number of contrast adjustments for each image: "))
-num_brightnesses = 2 #int(input("Enter the number of brightness adjustments for each image: "))
+num_brightnesses = 0 #int(input("Enter the number of brightness adjustments for each image: "))
 
 print("Processing images...")
 
