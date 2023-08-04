@@ -12,6 +12,14 @@ def flip_image(image):
     result = cv2.flip(image, 1)
     return result
 
+def sharp_image(image):
+    #old model to shaarp    
+    #kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    # sharp with 3x3 kernel filter
+    kernel = np.array([[0, -1, 0],[-1, 5,-1],[0, -1, 0]]) 
+    sharpped = cv2.filter2D(image, -1, kernel)
+    return sharpped
+
 def rotate_image(image, angle):
     center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(center, angle, 1.0)
@@ -30,15 +38,16 @@ def random_crop(image, min_crop_size):
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
     return cv2.addWeighted(image, 1 + float(contrast) / 100.0, image, 0, float(brightness))
 
-def loop_rotate(image, num_rotations):
+def rotate_loop(image, num_rotations):
     for j in range(num_rotations):
-        angle = random.uniform(-10, 10)
-        rotated_image = rotate_image(image, angle)
+        #angle = random.uniform(-20, 20)
+        rotated_image = rotate_image(image, 10)
         rotated_image_path = os.path.join(output_dir, f"rot{j+1}_{os.path.splitext(os.path.basename(image_path))[0]}.png")
         cv2.imwrite(rotated_image_path, rotated_image)
         print(f"Saved rotated image: {rotated_image_path}")
-
-def loop_crop(image, num_crops):
+        flip_loop(rotated_image)
+        
+def crop_loop(image, num_crops):
     for j in range(num_crops):
 
         #check image above 512 to avoid noise        
@@ -53,7 +62,7 @@ def loop_crop(image, num_crops):
         cv2.imwrite(cropped_image_path, cropped_image)
         print(f"Saved cropped image: {cropped_image_path}")
 
-def loop_contrast_2(image):
+def constrast_loop(image):
     contrast = 14
     for j in range(2):            
         contrasted_image = adjust_brightness_contrast(image, contrast=contrast)
@@ -62,7 +71,7 @@ def loop_contrast_2(image):
         print(f"Saved contrast-adjusted image: {contrasted_image_path}")
         contrast = contrast * -1
 
-def loop_contrast(image, num_contrasts):
+def loop_contrast_deprecated(image, num_contrasts):
     for j in range(num_contrasts):
         contrast = 14 #, random.uniform(0.2, 2.0)
         contrasted_image = adjust_brightness_contrast(image, contrast=contrast)
@@ -78,11 +87,17 @@ def loop_brightness(image, num_brightnesses):
         cv2.imwrite(brightened_image_path, brightened_image)
         print(f"Saved brightness-adjusted image: {brightened_image_path}")
 
-def loop_flip(image):
+def flip_loop(image):
     flipped_image = flip_image(image)
     flippped_image_path = os.path.join(output_dir, f"flip_{os.path.splitext(os.path.basename(image_path))[0]}_{uuid.uuid4()}.png")
     cv2.imwrite(flippped_image_path, flipped_image)
     print(f"Saved flip image: {flippped_image_path}")
+
+def sharp_loop(image):
+    sharpped_image = sharp_image(image)
+    sharpped_image_path = os.path.join(output_dir, f"sharpped_{os.path.splitext(os.path.basename(image_path))[0]}_{uuid.uuid4()}.png")
+    cv2.imwrite(sharpped_image_path, sharpped_image)
+    print(f"Saved sharp image: {sharpped_image_path}")
 
 # Hide the main tkinter window
 root = tk.Tk()
@@ -107,7 +122,7 @@ for format in image_formats:
     image_paths.extend(glob(os.path.join(input_dir, format)))
 
 # Get user input for data augmentation parameters
-num_rotations = 2 #int(input("Enter the number of rotations for each image: "))
+num_rotations = 1 #int(input("Enter the number of rotations for each image: "))
 num_crops = 6 #int(input("Enter the number of random crops for each image: "))
 num_contrasts = 1 #int(input("Enter the number of contrast adjustments for each image: "))
 num_brightnesses = 0 #int(input("Enter the number of brightness adjustments for each image: "))
@@ -126,20 +141,15 @@ try:
         original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")
         cv2.imwrite(original_image_path, image)
 
-        # Perform specified number of rotations and save copies
-        loop_rotate(image, num_rotations)
+        rotate_loop(image, num_rotations)
     
-        # Randomly crop the image with a minimum size of 512x512 and save copies
-        loop_crop(image, num_crops)
+        crop_loop(image, num_crops)
 
-        # Perform specified number of contrast adjustments and save copies
-        loop_contrast_2(image)
+        constrast_loop(image)
 
-        # Perform specified number of brightness adjustments and save copies
-        loop_brightness(image, num_brightnesses)
+        flip_loop(image)
 
-        # Perform specified flip
-        loop_flip(image)
+        sharp_loop(image)
 
     print("Data augmentation completed.")
 
