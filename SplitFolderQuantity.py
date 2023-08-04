@@ -24,7 +24,7 @@ print("Processing images...")
 try:
     folder_counter = 0
     image_counter = 0
-    image_top = 3
+    image_top = 1000
     output_dir = input_dir + "_split"
     
     
@@ -42,7 +42,7 @@ try:
 
         if image_counter >= image_top:
             folder_counter += 1
-            image_top += 3
+            image_top += 1000
 
 
     print("finished...")

@@ -147,9 +147,9 @@ try:
 
         rotate_loop(image, num_rotations)
     
-        crop_loop(image, num_crops)
+        #crop_loop(image, num_crops)
 
-        constrast_loop(image)
+        #constrast_loop(image)
 
         flip_loop(image)
 
