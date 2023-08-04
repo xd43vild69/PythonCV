@@ -46,7 +46,12 @@ def rotate_loop(image, num_rotations):
         cv2.imwrite(rotated_image_path, rotated_image)
         print(f"Saved rotated image: {rotated_image_path}")
         flip_loop(rotated_image)
-        
+
+def original_loop(image):
+    # Save a copy of the original image
+    original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")
+    cv2.imwrite(original_image_path, image)
+
 def crop_loop(image, num_crops):
     for j in range(num_crops):
 
@@ -137,9 +142,7 @@ try:
         # Read the image
         image = cv2.imread(image_path)
 
-        # Save a copy of the original image
-        original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")
-        cv2.imwrite(original_image_path, image)
+        original_loop(image)
 
         rotate_loop(image, num_rotations)
     
