@@ -27,12 +27,12 @@ def selectInputFiles():
     quantityEpochs.insert(0, 1)
     quantityBatchSize.insert(0, 4)
     quantityRepeatition.insert(0, 20)
-    totalCalculation = (quantity_imgs / 2) * 1 * 4 * 20
+    totalCalculation = quantity_imgs / 2 * 1 * 20 / 4
     quantityTotalTrain.insert(0, totalCalculation)
 
 def recalculate():
     quantityTotalTrain.delete(0, END)
-    totalCalculation = (float(quantityFiles.get()) / 2) * int(quantityEpochs.get()) * int(quantityBatchSize.get()) * int(quantityRepeatition.get())
+    totalCalculation = (float(quantityFiles.get()) / 2) * int(quantityEpochs.get()) * int(quantityRepeatition.get()) / int(quantityBatchSize.get())
     quantityTotalTrain.insert(0, totalCalculation)
 
 def countFiles(dir_path):
@@ -54,8 +54,7 @@ def createStructure():
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\model')
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
         copy_tree(sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
-
-    createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
+        createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
 
     return
 
