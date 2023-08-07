@@ -8,6 +8,8 @@ from tkinter import *
 from tkinter import filedialog
 from pathlib import Path
 from distutils.dir_util import copy_tree
+import datetime
+import uuid
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -53,6 +55,17 @@ def createStructure():
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
         copy_tree(sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
 
+    createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
+
+    return
+
+def createLog(path):
+            
+    file_name = f'{path}\log-{datetime.date.today()}_{uuid.uuid4()}.txt'
+    text1 = F'quantity files: {quantityFiles.get()}, quantity epochs: {quantityEpochs.get()}, quantity batch size: {quantityBatchSize.get()}, quantity repeats: {quantityRepeatition.get()}, total calculation: {quantityTotalTrain.get()}'
+
+    with open(file_name, 'w') as file:
+        file.write(text1)
     return
 
 frame = customtkinter.CTkFrame(master=root)
