@@ -18,9 +18,12 @@ root = customtkinter.CTk()
 root.geometry("1024x700")
 
 def selectInputFiles():
-    #print("Test1")
     dir_path = filedialog.askdirectory(title="Select input directory")
     quantity_imgs = countFiles(dir_path)
+
+    if quantity_imgs <= 0:
+        print("Empty folder")
+        return
 
     sourceEntry.insert(0,dir_path)    
     quantityFiles.insert(0, quantity_imgs)
