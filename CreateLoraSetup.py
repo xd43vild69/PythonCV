@@ -19,23 +19,25 @@ root.geometry("1024x700")
 
 def selectInputFiles():
     dir_path = filedialog.askdirectory(title="Select input directory")
-    quantity_imgs = countFiles(dir_path)
+    quantity_imgs = countFiles(dir_path) / 2
 
     if quantity_imgs <= 0:
         print("Empty folder")
         return
+
+    labelTitle.configure(text = f'Lora PP : {os.path.basename(dir_path)}')
 
     sourceEntry.insert(0,dir_path)    
     quantityFiles.insert(0, quantity_imgs)
     quantityEpochs.insert(0, 1)
     quantityBatchSize.insert(0, 4)
     quantityRepeatition.insert(0, 20)
-    totalCalculation = quantity_imgs / 2 * 1 * 20 / 4
+    totalCalculation = quantity_imgs * 1 * 20 / 4
     quantityTotalTrain.insert(0, totalCalculation)
 
 def recalculate():
     quantityTotalTrain.delete(0, END)
-    totalCalculation = (float(quantityFiles.get()) / 2) * int(quantityEpochs.get()) * int(quantityRepeatition.get()) / int(quantityBatchSize.get())
+    totalCalculation = float(quantityFiles.get()) * int(quantityEpochs.get()) * int(quantityRepeatition.get()) / int(quantityBatchSize.get())
     quantityTotalTrain.insert(0, totalCalculation)
 
 def countFiles(dir_path):
@@ -73,8 +75,8 @@ def createLog(path):
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
-label = customtkinter.CTkLabel(master=frame, text="Lora PP")
-label.pack(pady=12, padx=10)
+labelTitle = customtkinter.CTkLabel(master=frame, text="Lora PP")
+labelTitle.pack(pady=12, padx=10)
 
 button = customtkinter.CTkButton(master=frame, text="Select Path", command=selectInputFiles)
 button.pack(pady=5, padx=10)
