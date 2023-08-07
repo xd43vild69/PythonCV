@@ -6,6 +6,8 @@ from glob import glob
 import cv2
 from tkinter import *
 from tkinter import filedialog
+from pathlib import Path
+from distutils.dir_util import copy_tree
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -13,27 +15,18 @@ customtkinter.set_default_color_theme("dark-blue")
 root = customtkinter.CTk()
 root.geometry("1024x700")
 
-
-
 def selectInputFiles():
     #print("Test1")
     dir_path = filedialog.askdirectory(title="Select input directory")
     quantity_imgs = countFiles(dir_path)
 
-    sourceEntry.insert(0,dir_path)
-    
+    sourceEntry.insert(0,dir_path)    
     quantityFiles.insert(0, quantity_imgs)
-
     quantityEpochs.insert(0, 1)
-
     quantityBatchSize.insert(0, 4)
-
     quantityRepeatition.insert(0, 20)
-
     totalCalculation = (quantity_imgs / 2) * 1 * 4 * 20
-
     quantityTotalTrain.insert(0, totalCalculation)
-
 
 def recalculate():
     quantityTotalTrain.delete(0, END)
@@ -48,9 +41,18 @@ def countFiles(dir_path):
             count += 1
     return count
 
-def set_text(text):
-    #entry2.delete(0,END)
-    sourceEntry.insert(0,text)
+def createStructure():
+    path_dir = Path(sourceEntry.get())
+    baseName = os.path.basename(path_dir)
+
+    if not os.path.exists(f'{path_dir.parent.absolute()}\lora_{baseName}'):
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}')
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image')
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\log')
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\model')
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
+        copy_tree(sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
+
     return
 
 frame = customtkinter.CTkFrame(master=root)
@@ -97,6 +99,9 @@ quantityTotalTrain.pack(pady=5, padx=10)
 
 buttonRecalculate = customtkinter.CTkButton(master=frame, text="Calculation", command=recalculate)
 buttonRecalculate.pack(pady=5, padx=10)
+
+buttonCreateStructure = customtkinter.CTkButton(master=frame, text="Create Structure", command=createStructure)
+buttonCreateStructure.pack(pady=5, padx=10)
 
 root.mainloop()
 
