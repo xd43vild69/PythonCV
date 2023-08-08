@@ -16,7 +16,7 @@ customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
-root.geometry("1024x700")
+root.geometry("600x500")
 
 def selectInputFiles():
     dir_path = filedialog.askdirectory(title="Select input directory")
@@ -48,6 +48,16 @@ def countFiles(dir_path):
         if os.path.isfile(os.path.join(dir_path, path)):
             count += 1
     return count
+
+def cleanFiles():
+    sourceEntry.delete(0, END)
+    quantityFiles.delete(0, END)
+    quantityEpochs.delete(0, END)
+    quantityBatchSize.delete(0, END)
+    quantityRepeatition.delete(0, END)
+    quantityTotalTrain.delete(0, END)
+    labelTitle.configure(text = f'Lora PP :')
+    return
 
 def createStructure():
     path_dir = Path(sourceEntry.get())
@@ -82,17 +92,15 @@ def createConfigJson():
         # read a list of lines into data
         data = file.readlines()
 
-    #print ("Your name: " + data[32])
-
     logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{basename}\\log", '
     output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{basename}\\model", '
     train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{basename}\\image", '
     output_lora = f'  \"output_name\":\"lora_{basename.replace("_pp", "")}", '
 
-    data[32] = r"" + logging_dir.replace("\\", "\\\\")
-    data[59] = r"" + output_dir.replace("\\", "\\\\")
-    data[86] = r"" + train_data_dir.replace("\\", "\\\\")
-    data[60] = r"" + output_lora.replace("\\", "\\\\")
+    data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
+    data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
+    data[86] = r"" + train_data_dir.replace("\\", "\\\\") + "\n"
+    data[60] = r"" + output_lora.replace("\\", "\\\\") + "\n"
 
     if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json'):
         with open(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json', 'w') as file:
@@ -106,46 +114,49 @@ labelTitle = customtkinter.CTkLabel(master=frame, text="Lora PP")
 labelTitle.pack(pady=12, padx=10)
 
 button = customtkinter.CTkButton(master=frame, text="Select Path", command=selectInputFiles)
-button.pack(pady=5, padx=10)
+button.place(x=80, y=80)
 
 sourceEntry = customtkinter.CTkEntry(master=frame, placeholder_text="SourceImgs")
-sourceEntry.pack(pady=5, padx=10)
+sourceEntry.place(x=240, y=80)
 
 quantityImgs = customtkinter.CTkLabel(master=frame, text="QuantityFiles")
-quantityImgs.pack(pady=5, padx=10)
+quantityImgs.place(x=80, y=130)
 
-quantityFiles = customtkinter.CTkEntry(master=frame, placeholder_text="Path")
-quantityFiles.pack(pady=5, padx=10)
+quantityFiles = customtkinter.CTkEntry(master=frame, placeholder_text="QuantityFiles")
+quantityFiles.place(x=240, y=130)
 
-repeatition = customtkinter.CTkLabel(master=frame, text="Repetition")
-repeatition.pack(pady=5, padx=10)
+repeatition = customtkinter.CTkLabel(master=frame, text="Repets")
+repeatition.place(x=80, y=180)
 
-quantityRepeatition = customtkinter.CTkEntry(master=frame, placeholder_text="Repetition")
-quantityRepeatition.pack(pady=5, padx=10)
+quantityRepeatition = customtkinter.CTkEntry(master=frame, placeholder_text="Repets")
+quantityRepeatition.place(x=240, y=180)
 
 epochs = customtkinter.CTkLabel(master=frame, text="Epochs")
-epochs.pack(pady=5, padx=10)
+epochs.place(x=80, y=230)
 
 quantityEpochs = customtkinter.CTkEntry(master=frame, placeholder_text="Epochs")
-quantityEpochs.pack(pady=5, padx=10)
+quantityEpochs.place(x=240, y=230)
 
 batchSize = customtkinter.CTkLabel(master=frame, text="batchSize")
-batchSize.pack(pady=5, padx=10)
+batchSize.place(x=80, y=280)
 
 quantityBatchSize = customtkinter.CTkEntry(master=frame, placeholder_text="BatchSize")
-quantityBatchSize.pack(pady=5, padx=10)
+quantityBatchSize.place(x=240, y=280)
 
 totalTrain = customtkinter.CTkLabel(master=frame, text="totalTrain")
-totalTrain.pack(pady=5, padx=10)
+totalTrain.place(x=80, y=330)
 
 quantityTotalTrain = customtkinter.CTkEntry(master=frame, placeholder_text="totalTrain")
-quantityTotalTrain.pack(pady=5, padx=10)
+quantityTotalTrain.place(x=240, y=330)
 
 buttonRecalculate = customtkinter.CTkButton(master=frame, text="Calculation", command=recalculate)
-buttonRecalculate.pack(pady=5, padx=10)
+buttonRecalculate.place(x=80, y=380)
 
 buttonCreateStructure = customtkinter.CTkButton(master=frame, text="Create Structure", command=createStructure)
-buttonCreateStructure.pack(pady=5, padx=10)
+buttonCreateStructure.place(x=240, y=380)
+
+buttonClean = customtkinter.CTkButton(master=frame, text="Clean", command=cleanFiles)
+buttonClean.place(x=80, y=430)
 
 root.mainloop()
 
