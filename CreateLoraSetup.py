@@ -116,14 +116,10 @@ def getInitialPrompt():
 
     path_init = f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_{baseName}'
 
-    #path = r'E:/demos/files_demos/account/*.txt'
     files = glob.glob(path_init + "\\*.txt")
-
-    print(files)
 
     data = ""
     with open(files[0], 'r') as file:
-        # read a list of lines into data
         data = file.readlines()
     return data
 
