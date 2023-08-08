@@ -10,6 +10,7 @@ from pathlib import Path
 from distutils.dir_util import copy_tree
 import datetime
 import uuid
+import pathlib
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -57,9 +58,10 @@ def createStructure():
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image')
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\log')
         os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\model')
-        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
-        copy_tree(sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_baseName')
+        os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_{baseName}')
+        copy_tree(sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_{baseName}')
         createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
+        createConfigJson()
 
     return
 
@@ -70,6 +72,31 @@ def createLog(path):
 
     with open(file_name, 'w') as file:
         file.write(text1)
+    return
+
+def createConfigJson():    
+    path_dir = Path(sourceEntry.get())
+    basename = os.path.basename(path_dir)
+
+    with open('LoraD13.json', 'r') as file:
+        # read a list of lines into data
+        data = file.readlines()
+
+    #print ("Your name: " + data[32])
+
+    logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{basename}\\log", '
+    output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{basename}\\model", '
+    train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{basename}\\image", '
+    output_lora = f'  \"output_name\":\"lora_{basename.replace("_pp", "")}", '
+
+    data[32] = r"" + logging_dir.replace("\\", "\\\\")
+    data[59] = r"" + output_dir.replace("\\", "\\\\")
+    data[86] = r"" + train_data_dir.replace("\\", "\\\\")
+    data[60] = r"" + output_lora.replace("\\", "\\\\")
+
+    if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json'):
+        with open(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json', 'w') as file:
+            file.writelines( data )
     return
 
 frame = customtkinter.CTkFrame(master=root)
