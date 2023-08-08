@@ -11,6 +11,7 @@ from distutils.dir_util import copy_tree
 import datetime
 import uuid
 import pathlib
+import glob
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -96,16 +97,35 @@ def createConfigJson():
     output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{basename}\\model", '
     train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{basename}\\image", '
     output_lora = f'  \"output_name\":\"lora_{basename.replace("_pp", "")}", '
+    sample_prompts = f'  \"sample_prompts\":\"{getInitialPrompt()[0]}", '
 
     data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
     data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
     data[86] = r"" + train_data_dir.replace("\\", "\\\\") + "\n"
     data[60] = r"" + output_lora.replace("\\", "\\\\") + "\n"
+    data[70] = sample_prompts + "\n"
 
     if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json'):
         with open(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json', 'w') as file:
             file.writelines( data )
     return
+
+def getInitialPrompt():
+    path_dir = Path(sourceEntry.get())
+    baseName = os.path.basename(path_dir)
+
+    path_init = f'{path_dir.parent.absolute()}\lora_{baseName}\image\{quantityRepeatition.get()}_{baseName}'
+
+    #path = r'E:/demos/files_demos/account/*.txt'
+    files = glob.glob(path_init + "\\*.txt")
+
+    print(files)
+
+    data = ""
+    with open(files[0], 'r') as file:
+        # read a list of lines into data
+        data = file.readlines()
+    return data
 
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
