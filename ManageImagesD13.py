@@ -52,6 +52,47 @@ def original_loop(image):
     original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")
     cv2.imwrite(original_image_path, image)
 
+
+def resize_loop(image):
+    original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
+    height = image.shape[0]
+    
+    #image_extended = np.ndarray((image.shape[0] + height,) + image.shape[1:], dtype=image.dtype) 
+    #image_extended[:image.shape[0], :] = image
+    #dim = (width, height)
+
+    image_extended = np.ndarray((image.shape[0] + 200,) + image.shape[1:], dtype=image.dtype)
+    image_extended[:image.shape[0], :] = image
+    image_extended[image.shape[0]:, :] = np.array([255,255,255])
+
+    # resize image
+    #resized = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+    cv2.imwrite(original_image_path, image_extended)  
+
+def square_image(img, size=(1736,1736)):
+    original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
+    h, w = img.shape[:2]
+    c = img.shape[2] if len(img.shape)>2 else 1
+
+    if h == w: 
+        return cv2.resize(img, size, cv2.INTER_AREA)
+
+    dif = h if h > w else w
+
+    interpolation = cv2.INTER_AREA if dif > (size[0]+size[1])//2 else cv2.INTER_CUBIC
+
+    x_pos = (dif - w)//2
+    y_pos = (dif - h)//2
+
+    if len(img.shape) == 2:
+        mask = np.zeros((dif, dif), dtype=img.dtype)
+        mask[y_pos:y_pos+h, x_pos:x_pos+w] = img[:h, :w]
+    else:
+        mask = np.zeros((dif, dif, c), dtype=img.dtype)
+        mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = img[:h, :w, :]
+    
+    cv2.imwrite(original_image_path, mask)  
+
 def crop_loop(image, num_crops):
     for j in range(num_crops):
 
@@ -142,18 +183,19 @@ try:
 
         # Read the image
         image = cv2.imread(image_path)
+        #resize_loop(image)
 
-        original_loop(image)
+        square_image(image)
 
-        rotate_loop(image, num_rotations)
-    
+        #original_loop(image)
+        #rotate_loop(image, num_rotations)
+        #flip_loop(image)
+        #sharp_loop(image)
+        
         #crop_loop(image, num_crops)
-
         #constrast_loop(image)
 
-        flip_loop(image)
 
-        sharp_loop(image)
 
     print("Data augmentation completed.")
 
