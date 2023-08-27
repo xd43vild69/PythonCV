@@ -1,13 +1,11 @@
 
 import os
 import sys
-import random
 import cv2
 import numpy as np
 import tkinter as tk
 from glob import glob
 from tkinter import filedialog
-import uuid
 
 def square_image_768(img, size=(768,768)):
     original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
@@ -15,7 +13,9 @@ def square_image_768(img, size=(768,768)):
     c = img.shape[2] if len(img.shape)>2 else 1
 
     if h == w: 
-        return cv2.resize(img, size, cv2.INTER_AREA)
+        resized =cv2.resize(img, size, cv2.INTER_AREA)
+        cv2.imwrite(original_image_path, resized)
+        return
 
     dif = h if h > w else w
 
@@ -74,22 +74,8 @@ try:
     # Loop through all image files in the input directory
     for image_path in image_paths:
         print(f"Processing image: {image_path}")
-
-        # Read the image
         image = cv2.imread(image_path)
-        #resize_loop(image)
-
         square_image_768(image)
-
-        #original_loop(image)
-        #rotate_loop(image, num_rotations)
-        #flip_loop(image)
-        #sharp_loop(image)
-        
-        #crop_loop(image, num_crops)
-        #constrast_loop(image)
-
-
 
     print("Data augmentation completed.")
 
