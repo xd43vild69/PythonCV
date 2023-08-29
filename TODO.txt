@@ -1,0 +1,8 @@
+# Create a complete workflow from ui
+
+    1. Normalize
+    2. Aumentation
+    3. Blip
+    4. CreateLoraSetup
+    5. Run Lora training
+    
