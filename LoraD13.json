@@ -37,7 +37,7 @@
   "lr_scheduler_power": "",
   "lr_warmup": 0,
   "max_data_loader_n_workers": "1",
-  "max_resolution": "512,768",
+  "max_resolution": "768,768",
   "max_token_length": "75",
   "max_train_epochs": "",
   "mem_eff_attn": false,

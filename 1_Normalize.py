@@ -77,8 +77,8 @@ try:
         image = cv2.imread(image_path)
         square_image_768(image)
 
-    print("Data augmentation completed.")
+    print("Data normalization completed.")
 
 except KeyboardInterrupt:
-    print("Data augmentation interrupted by the user.")
+    print("Data normalization interrupted by the user.")
     sys.exit(0)
