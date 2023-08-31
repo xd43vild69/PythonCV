@@ -1,8 +1,17 @@
 # Create a complete workflow from ui
 
     1. Normalize
-    2. Aumentation
+    2. Augmentation
     3. Blip
     4. CreateLoraSetup
     5. Run Lora training
+
+
+    ---
+
+    create tabs UI
+
+    first tab for normalize & Aumentation
+    second tab for lora training
+    
     
