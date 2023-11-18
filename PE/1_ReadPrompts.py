@@ -8,6 +8,7 @@ import operator
 from pathlib import Path
 
 # Hide the main tkinter window
+
 root = tk.Tk()
 root.withdraw()
 
