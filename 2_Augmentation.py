@@ -132,7 +132,7 @@ input_dir = filedialog.askdirectory(title="Select input directory")
 # Ask user to select output directory
 print("Please select the output directory...")
 #output_dir = filedialog.askdirectory(title="Select output directory")
-output_dir = input_dir + '_output'
+output_dir = input_dir + '_augmentation'
 
 # If output directory does not exist, create it
 if not os.path.exists(output_dir):
@@ -146,7 +146,7 @@ for format in image_formats:
 
 # Get user input for data augmentation parameters
 num_rotations = 1 #int(input("Enter the number of rotations for each image: "))
-num_crops = 6 #int(input("Enter the number of random crops for each image: "))
+num_crops = 2 #int(input("Enter the number of random crops for each image: "))
 num_contrasts = 1 #int(input("Enter the number of contrast adjustments for each image: "))
 num_brightnesses = 0 #int(input("Enter the number of brightness adjustments for each image: "))
 
@@ -164,7 +164,7 @@ try:
         original_loop(image)
         rotate_loop(image, num_rotations)
         flip_loop(image)
-        sharp_loop(image)
+        #sharp_loop(image)
         
         #crop_loop(image, num_crops)
         #constrast_loop(image)

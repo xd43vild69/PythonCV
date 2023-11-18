@@ -11,7 +11,6 @@ class SimpleUI:
 
     loraFileManager = LoraFileManager()
             
-
     def __init__(self, root):
         self.root = root
         self.root.title("Lora UI - Configuration")
@@ -99,6 +98,7 @@ class SimpleUI:
         self.quantityBatchSize.insert(0, 4)
         self.quantityRepeatition.insert(0, 20)
         totalCalculation = quantity_imgs * 1 * 20 / 4
+        
         self.quantityTotalTrain.insert(0, totalCalculation)
         return    
 
