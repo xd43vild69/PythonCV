@@ -13,4 +13,5 @@ for item in original_list:
 
 # Print the original list and the count dictionary
 print("Original List:", original_list)
+
 print("Count Dictionary:", count_dict)
