@@ -7,8 +7,6 @@ from collections import defaultdict
 import operator
 from pathlib import Path
 
-# Hide the main tkinter window
-
 root = tk.Tk()
 root.withdraw()
 
@@ -25,7 +23,7 @@ for path in Path(input_dir).rglob('*.txt'):
 
         values = file_content.split(',')        
 
-            # Iterate over the values
+        # Iterate over the values
         for value in values:
             # Trim any leading or trailing whitespaces
             value = value.strip()
@@ -36,7 +34,10 @@ for path in Path(input_dir).rglob('*.txt'):
             if value in count_dict:
                 count_dict[value] += 1
             else:
-                count_dict[value] = 1
+                if value == "" or value == "2":
+                    count_dict["NA"] = 1
+                else:
+                    count_dict[value] = 1
 
 # Sort the dictionary by values
 sorted_dict = dict(sorted(count_dict.items(), key=operator.itemgetter(1), reverse=True))

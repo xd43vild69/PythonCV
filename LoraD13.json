@@ -60,7 +60,7 @@
   "output_dir": "C:/Users/D13/Desktop/Lora/model",
   "output_name": "VU_Lora_V1",
   "persistent_data_loader_workers": false,
-  "pretrained_model_name_or_path": "C:/dev/stable-diffusion-webui/models/Stable-diffusion/epicrealism_pureEvolutionV5.safetensors",
+  "pretrained_model_name_or_path": "C:/dev/stable-diffusion-webui/models/Stable-diffusion/epicphotogasm_lastUnicorn.safetensors",
   "prior_loss_weight": 1.0,
   "random_crop": false,
   "rank_dropout": 0,
