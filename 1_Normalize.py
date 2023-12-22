@@ -50,7 +50,7 @@ input_dir = filedialog.askdirectory(title="Select input directory")
 # Ask user to select output directory
 print("Please select the output directory...")
 #output_dir = filedialog.askdirectory(title="Select output directory")
-output_dir = input_dir + '_normalized'
+output_dir = input_dir + '_n'
 
 # If output directory does not exist, create it
 if not os.path.exists(output_dir):

@@ -32,9 +32,9 @@ def selectInputFiles():
     sourceEntry.insert(0,dir_path)    
     quantityFiles.insert(0, quantity_imgs)
     quantityEpochs.insert(0, 1)
-    quantityBatchSize.insert(0, 4)
+    quantityBatchSize.insert(0, 2)
     quantityRepeatition.insert(0, 20)
-    totalCalculation = quantity_imgs * 1 * 20 / 4
+    totalCalculation = quantity_imgs * 1 * 20 / 2
     quantityTotalTrain.insert(0, totalCalculation)
 
 def recalculate():
