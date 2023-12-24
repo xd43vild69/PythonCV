@@ -4,13 +4,13 @@ Batch Image Manager
 
 # TODO
 
--- create an integrate UI with tabs to handle each needed step
+-- build a unified user interface with tabs to manage each necessary step
 
 -- add batch functionality to include the key captionings on the init for pre process .txt captionings
 
--- call from this application the preprocess procedure (WD14, Blip) captionings
+-- call the preprocess procedure (WD14, Blip) captionings from this application
 
--- learning better & faster loras loras
+-- learning more quickly and effectively Loras Loras
 
 ---
 
@@ -27,4 +27,4 @@ Batch Image Manager
 # create tabs UI
 
     first tab for normalize & Aumentation
-    second tab for lora training
+    second tab for lora's training
