@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
 import customtkinter
+from CNormalize import CNormalize 
 
 # Function to apply dark theme
 def apply_dark_theme():
@@ -28,6 +29,8 @@ def change_tab(event):
 
 def cleanFiles():
     print("Ok1")
+    cnormalize = CNormalize()
+    #cnormalize.start_engine()    
     return
 
 # Create a notebook (tabs container)
@@ -48,7 +51,7 @@ notebook.add(tab3, text="Lora setup")
 # Add content to tabs
 #label1 = tk.Label(tab1, text="Normalize")
 #label1.pack(padx=10, pady=10)
-5
+
 buttonNormalize = tk.Button(tab1, text="Normalize", command=cleanFiles)
 buttonNormalize.place(x=20, y=40)
 
