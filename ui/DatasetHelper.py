@@ -17,7 +17,7 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 
 class App(customtkinter.CTk):
 
-    loraName = ""
+    LORA = ""
 
     def __init__(self):
         super().__init__()
@@ -106,6 +106,9 @@ class App(customtkinter.CTk):
 
     def selectInputFiles(self):
         if (self.validationName()):
+            
+            self.LORA = self.siderbar_loraValue.get()
+
             dir_path = filedialog.askdirectory(title="Select input directory")
             quantity_imgs = self.countFiles(dir_path) / 2
 
@@ -151,16 +154,17 @@ class App(customtkinter.CTk):
         baseName = os.path.basename(path_dir)
 
         if not os.path.exists(f'{path_dir.parent.absolute()}\lora_{baseName}'):
-            os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}')
-            os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image')
-            os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\log')
-            os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\model')
-            os.makedirs(f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}')
-            copy_tree(self.sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}')
-            self.createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
+            os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}')
+            os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\image')
+            os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\log')
+            os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\model')
+            os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
+            copy_tree(self.sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
+            self.createLog(f'{path_dir.parent.absolute()}\lora_{self.LORA}')
             self.createConfigJson()
             self.setKeywordLora()
-
+        else:
+            print("Folder already exists")
         return
 
     def createLog(self, path):
@@ -174,17 +178,16 @@ class App(customtkinter.CTk):
 
     def createConfigJson(self):    
         path_dir = Path(self.sourceEntry.get())
-        basename = os.path.basename(path_dir)
 
         with open('LoraD13.json', 'r') as file:
             # read a list of lines into data
             data = file.readlines()
 
-        logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{basename}\\log", '
-        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{basename}\\model", '
-        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{basename}\\image", '
-        output_lora = f'  \"output_name\":\"{self.siderbar_loraValue.get()}", '
-        sample_prompts = f'  \"sample_prompts\":\"{self.siderbar_loraValue.get() + "," + self.getInitialPrompt()[0]}", '
+        logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{self.LORA}\\log", '
+        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{self.LORA}\\model", '
+        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{self.LORA}\\image", '
+        output_lora = f'  \"output_name\":\"{self.LORA}", '
+        sample_prompts = f'  \"sample_prompts\":\"{self.LORA + "," + self.getInitialPrompt()[0]}", '
 
         data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
         data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
@@ -192,16 +195,15 @@ class App(customtkinter.CTk):
         data[86] = r"" + train_data_dir.replace("\\", "\\\\") + "\n"        
         data[70] = sample_prompts + "\n"
 
-        if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json'):
-            with open(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json', 'w') as file:
+        if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json'):
+            with open(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.siderbar_loraValue.get()}.json', 'w') as file:
                 file.writelines( data )
         return
     
     def setKeywordLora(self):
         path_dir = Path(self.sourceEntry.get())
-        baseName = os.path.basename(path_dir)
 
-        path_init = f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}'
+        path_init = f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}'
 
         files = glob.glob(path_init + "\\*.txt")
         data = ""
@@ -215,10 +217,9 @@ class App(customtkinter.CTk):
         return           
 
     def getInitialPrompt(self):
-        path_dir = Path(self.sourceEntry.get())
-        baseName = os.path.basename(path_dir)
+        path_dir = Path(self.sourceEntry.get())        
 
-        path_init = f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}'
+        path_init = f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}'
 
         files = glob.glob(path_init + "\\*.txt")
 
