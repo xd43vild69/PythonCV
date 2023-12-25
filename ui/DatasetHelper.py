@@ -159,6 +159,7 @@ class App(customtkinter.CTk):
             copy_tree(self.sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}')
             self.createLog(f'{path_dir.parent.absolute()}\lora_{baseName}')
             self.createConfigJson()
+            self.setKeywordLora()
 
         return
 
@@ -183,7 +184,7 @@ class App(customtkinter.CTk):
         output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{basename}\\model", '
         train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{basename}\\image", '
         output_lora = f'  \"output_name\":\"{self.siderbar_loraValue.get()}", '
-        sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()[0]}", '
+        sample_prompts = f'  \"sample_prompts\":\"{self.siderbar_loraValue.get() + "," + self.getInitialPrompt()[0]}", '
 
         data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
         data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
@@ -195,6 +196,23 @@ class App(customtkinter.CTk):
             with open(f'{path_dir.parent.absolute()}\\lora_{basename}\\lora_config_{basename}.json', 'w') as file:
                 file.writelines( data )
         return
+    
+    def setKeywordLora(self):
+        path_dir = Path(self.sourceEntry.get())
+        baseName = os.path.basename(path_dir)
+
+        path_init = f'{path_dir.parent.absolute()}\lora_{baseName}\image\{self.quantityRepeatition.get()}_{baseName}'
+
+        files = glob.glob(path_init + "\\*.txt")
+        data = ""
+        for file in files:
+            with open(file, 'r') as f:
+                data = f.readlines()
+            dataAlteration = self.siderbar_loraValue.get() + ", " + data[0]
+            with open(file, 'w', encoding='utf-8') as f:
+                f.write(dataAlteration)
+
+        return           
 
     def getInitialPrompt(self):
         path_dir = Path(self.sourceEntry.get())
