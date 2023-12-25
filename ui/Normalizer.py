@@ -5,16 +5,16 @@ import sys
 from glob import glob
 from tkinter import filedialog
 
-class CNormalize:
+class Normalizer:
 
     output_dir = ""
 
-    def __init__(self):
+    def __init__(self, name):
         # Ask user to select input directory
         print("Please select the input directory...")
         
         input_dir = filedialog.askdirectory(title="Select input directory")
-        self.output_dir = input_dir + '_n'
+        self.output_dir = input_dir + '_n_' + name
 
         # If output directory does not exist, create it
         if not os.path.exists(self.output_dir):
