@@ -45,12 +45,12 @@ class App(customtkinter.CTk):
         self.sidebar_button_1.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Augmentation", command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=3, column=0, padx=20, pady=10)
-        #self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Lora Struct", command=self.sidebar_button_event)
-        #self.sidebar_button_3.grid(row=4, column=0, padx=20, pady=10)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.sidebar_button_event)
+        self.sidebar_button_3.grid(row=4, column=0, padx=20, pady=10)
 
         # self is the right window place
 
-        self.labelTitle = customtkinter.CTkLabel(self, text="Lora PP")
+        self.labelTitle = customtkinter.CTkLabel(self, text="Calculations from source")
         self.labelTitle.place(x=200, y=20) 
 
         self.buttonl1 = customtkinter.CTkButton(self, text="Select Path", command=self.selectInputFiles)
@@ -116,7 +116,7 @@ class App(customtkinter.CTk):
                 print("Empty folder")
                 return
 
-            self.labelTitle.configure(text = f'Lora PP : {os.path.basename(dir_path)}')
+            self.labelTitle.configure(text = f'Source : {os.path.basename(dir_path)}')
 
             self.sourceEntry.insert(0,dir_path)    
             self.quantityFiles.insert(0, quantity_imgs)
@@ -187,7 +187,7 @@ class App(customtkinter.CTk):
         output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{self.LORA}\\model", '
         train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{self.LORA}\\image", '
         output_lora = f'  \"output_name\":\"{self.LORA}", '
-        sample_prompts = f'  \"sample_prompts\":\"{self.LORA + "," + self.getInitialPrompt()[0]}", '
+        sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()}", '
 
         data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
         data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
@@ -196,7 +196,7 @@ class App(customtkinter.CTk):
         data[70] = sample_prompts + "\n"
 
         if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json'):
-            with open(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.siderbar_loraValue.get()}.json', 'w') as file:
+            with open(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json', 'w') as file:
                 file.writelines( data )
         return
     
@@ -210,7 +210,7 @@ class App(customtkinter.CTk):
         for file in files:
             with open(file, 'r') as f:
                 data = f.readlines()
-            dataAlteration = self.siderbar_loraValue.get() + ", " + data[0]
+            dataAlteration = self.LORA + ", " + data[0]
             with open(file, 'w', encoding='utf-8') as f:
                 f.write(dataAlteration)
 
@@ -225,7 +225,7 @@ class App(customtkinter.CTk):
 
         data = ""
         with open(files[0], 'r') as file:
-            data = file.readlines()
+            data = file.readlines()[0][:-2]
         return data        
     
     def validationName(self):
