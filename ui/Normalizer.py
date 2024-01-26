@@ -11,9 +11,9 @@ class Normalizer:
 
     def __init__(self, name):
         # Ask user to select input directory
-        print("Please select the input directory...")
+        print("Please select the source directory...")
         
-        input_dir = filedialog.askdirectory(title="Select input directory")
+        input_dir = filedialog.askdirectory(title="Select source directory")
         self.output_dir = input_dir + '_n_' + name
 
         # If output directory does not exist, create it
@@ -34,9 +34,12 @@ class Normalizer:
         try:
             # Loop through all image files in the input directory
             for image_path in image_paths:
-                print(f"Processing image: {image_path}")
-                image = cv2.imread(image_path)
-                self.square_image_768(image, image_path)
+                try:
+                    print(f"Processing image: {image_path}")
+                    image = cv2.imread(image_path)
+                    self.square_image_768(image, image_path)
+                except:
+                    print("img exception")
 
             print("Data normalization completed.")
 

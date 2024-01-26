@@ -33,25 +33,29 @@ class App(customtkinter.CTk):
 
         # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Preparation", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(5, weight=1)
+        
+        gpady = 10
+        gpadx = 20
+
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Preparation", font=customtkinter.CTkFont(size=12, weight="bold"))
+        self.logo_label.grid(row=0, column=0, padx=0, pady=gpady)
         
         self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text="LoraName")
-        self.siderbar_loraValue.grid(row=1, column=0, padx=20, pady=10)
+        self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Normalizer 768", command=self.normalizer)
-        self.sidebar_button_1.grid(row=2, column=0, padx=20, pady=10)
+        self.sidebar_button_1.grid(row=2, column=0, padx=gpadx, pady=gpady)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Augmentation", command=self.sidebar_button_event)
-        self.sidebar_button_2.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_2.grid(row=3, column=0, padx=gpadx, pady=gpady)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.sidebar_button_event)
-        self.sidebar_button_3.grid(row=4, column=0, padx=20, pady=10)
+        self.sidebar_button_3.grid(row=4, column=0, padx=gpadx, pady=gpady)
 
         # self is the right window place
 
-        self.labelTitle = customtkinter.CTkLabel(self, text="Calculations from source")
-        self.labelTitle.place(x=200, y=20) 
+        self.labelTitle = customtkinter.CTkLabel(self, text="Calculations from source", font=customtkinter.CTkFont(size=12, weight="bold"))
+        self.labelTitle.place(x=280, y=10) 
 
         self.buttonl1 = customtkinter.CTkButton(self, text="Select Path", command=self.selectInputFiles)
         self.buttonl1.place(x=200, y=60)      
