@@ -1,5 +1,5 @@
 import tkinter
-import tkinter.messagebox
+from tkinter import messagebox
 import customtkinter
 from Normalizer import Normalizer 
 import os
@@ -34,7 +34,7 @@ class App(customtkinter.CTk):
         # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(5, weight=1)
+        self.sidebar_frame.grid_rowconfigure(6, weight=1)
         
         gpady = 10
         gpadx = 20
@@ -51,6 +51,8 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=3, column=0, padx=gpadx, pady=gpady)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.sidebar_button_event)
         self.sidebar_button_3.grid(row=4, column=0, padx=gpadx, pady=gpady)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Test", command=self.test_button_event)
+        self.sidebar_button_3.grid(row=5, column=0, padx=gpadx, pady=gpady)        
 
         # self is the right window place
 
@@ -99,9 +101,17 @@ class App(customtkinter.CTk):
     def sidebar_button_event(self):
         print("sidebar_button click")
 
+    def test_button_event(self):
+        messagebox.showinfo("x")
+
+    def finish_button_event(self):
+        messagebox.showinfo("Complete", "Done")
+
     def normalizer(self):
         if (self.validationName()):
             normalizer = Normalizer(self.siderbar_loraValue.get())
+        
+        self.finish_button_event()
         return
     
     def open_input_dialog_normalize_event(self):
@@ -167,8 +177,9 @@ class App(customtkinter.CTk):
             self.createLog(f'{path_dir.parent.absolute()}\lora_{self.LORA}')
             self.createConfigJson()
             self.setKeywordLora()
+            self.finish_button_event()
         else:
-            print("Folder already exists")
+            print("Folder already exists")        
         return
 
     def createLog(self, path):
