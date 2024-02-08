@@ -11,9 +11,9 @@ class Prompt:
     model = ""
     vaeHash = ""
     vae = ""
+    denoiseStrength = ""
     clipSkip = ""
-    aDetailer = ""
-    aDetailerConfidence = ""
+    aDetailerModel = ""
     aDetailerPrompt = ""
     faceRestoration = ""
     block = ""
@@ -42,6 +42,8 @@ class Prompt:
                 self.currentState = "VAE hash:"         
             case str(x) if "VAE:" in x:
                 self.currentState = "VAE:" 
+            case str(x) if "Denoising strength:" in x:
+                self.currentState = "Denoising strength:"
             case str(x) if "Clip skip:" in x:
                 self.currentState = "Clip skip:"
             case str(x) if "ADetailer model:" in x:
@@ -50,6 +52,10 @@ class Prompt:
                 self.currentState = "ADetailer prompt:"
             case str(x) if "Face restoration:" in x:
                 self.currentState = "Face restoration:"
+            case str(x) if "ADetailer confidence:" in x:
+                self.currentState = "x.13"
+            case str(x) if "x.13" in x:
+                self.currentState = "x.13"
             case _:
                 self.currentState = self.currentState
 
@@ -78,12 +84,14 @@ class Prompt:
                 self.vaeHash = self.vaeHash + value.replace("VAE hash:", "")
             case "VAE:":
                 self.vae = self.vae + value.replace("VAE:", "")
+            case "Denoising strength:":
+                self.denoiseStrength = self.denoiseStrength + value.replace("Denoising strength:", "")
             case "Clip skip:":
                 self.clipSkip = self.clipSkip + value.replace("Clip skip:", "")
             case "ADetailer model:":
-                self.aDetailer = self.aDetailer + value + ","
+                self.aDetailerModel = self.aDetailerModel + value.replace("ADetailer model:", "")
             case "ADetailer prompt:":
-                self.aDetailer = self.aDetailerPrompt + value + ","
+                self.aDetailerPrompt = self.aDetailerPrompt + value.replace("ADetailer prompt:", "") + ","
             case "Face restoration:":
                 self.faceRestoration = self.faceRestoration + value
             case "ADetailer confidence":
