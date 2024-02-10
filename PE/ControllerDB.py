@@ -23,21 +23,24 @@ def AddSDt2i():
         
         with open(path, 'r') as file:
             prompts = Prompt()
+
             file_content = file.read()
+            file_content = file_content.replace('\n', ',')
+
             values = file_content.split(',')
+            
             prompts.block = file_content
+
             prompts.currentState = "Positive:"
-            count = 0
+
             try:
                 for value in values:
-                    pValue = value.split("\n")
-                    for v in pValue:
-                        count=count+1
-                        if(count == 16):
-                            print(1)
-                        v = v.strip() # Trim leading or trailing whitespaces
-                        prompts.nextStatus(v)
-                        prompts.addValue(v)
+                    value = value.strip() # Trim leading or trailing whitespaces
+                    if(value != ''):
+                        prompts.nextStatus(value)
+                        prompts.addValue(value)
+                    else:
+                        print("empty")
 
                 dbmng = DBManager()
                 dbmng.Addt2i(prompts)
@@ -53,7 +56,6 @@ def AddSDi2i():
             values = file_content.split(',')
             prompts.block = file_content
             prompts.currentState = "Positive:"
-            count = 0
             try:
                 for value in values:
                     pValue = value.split("\n")
