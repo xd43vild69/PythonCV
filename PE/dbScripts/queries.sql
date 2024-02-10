@@ -5,8 +5,7 @@ select count(adetailerloras), adetailerloras from tblt2i
 group by adetailerloras
 order by 1 desc
 
-
-select count(positive), positive from tblt2i
+select count(positive), positive from tbli2i
 group by positive
 order by 1 desc
 
@@ -14,7 +13,11 @@ select count(loras), loras from tblt2i
 group by loras
 order by 1 desc
 
-select count(*) from tblt2i
+select count(loras), loras from tbli2i
+group by loras
+order by 1 desc
+
+select count(*) from tbli2i
 select * from tblt2i
 
 select * from tblt2i
@@ -31,7 +34,10 @@ order by 1 desc
 
 /*
 DELETE FROM public.tblt2i;
+select * from tblt2i limit 50
+select id, model, steps, loras from tblt2i
 DELETE FROM public.tbli2i;
+select * from tbli2i
 */
 
 
