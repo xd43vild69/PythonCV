@@ -42,7 +42,7 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Preparation", font=customtkinter.CTkFont(size=12, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=0, pady=gpady)
         
-        self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text="LoraName")
+        self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text="AB_Location_V#.YY")
         self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Normalizer 768", command=self.normalizer)
