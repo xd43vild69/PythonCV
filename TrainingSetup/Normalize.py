@@ -19,7 +19,7 @@ class Normalize:
     def __init__(self):
         return  
 
-    def square_image_768(img, size=(768,768)):
+    def square_image_768(img, size=(1024,1024)):
         original_image_path = os.path.join(_output_dir, f"orig_{os.path.splitext(os.path.basename(_image_path))[0]}.png")    
         h, w = img.shape[:2]
         c = img.shape[2] if len(img.shape)>2 else 1

@@ -14,7 +14,7 @@ class Normalizer:
         print("Please select the source directory...")
         
         input_dir = filedialog.askdirectory(title="Select source directory")
-        self.output_dir = input_dir + '_n_' + name
+        self.output_dir = input_dir + '_n'
 
         # If output directory does not exist, create it
         if not os.path.exists(self.output_dir):
@@ -47,7 +47,7 @@ class Normalizer:
             print("Data normalization interrupted by the user.")
             sys.exit(0)
 
-    def square_image_768(self, img, image_path, size=(768,768)):
+    def square_image_768(self, img, image_path, size=(1024,1024)):
 
         original_image_path = os.path.join(self.output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
         h, w = img.shape[:2]
@@ -72,8 +72,8 @@ class Normalizer:
             mask = np.zeros((dif, dif, c), dtype=img.dtype)
             mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = img[:h, :w, :]
         
-        width = 768
-        height = 768
+        width = 1024
+        height = 1024
         dim = (width, height)
 
         resized = cv2.resize(mask, dim, interpolation = cv2.INTER_AREA)

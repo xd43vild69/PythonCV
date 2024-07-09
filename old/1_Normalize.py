@@ -7,7 +7,7 @@ import tkinter as tk
 from glob import glob
 from tkinter import filedialog
 
-def square_image_768(img, size=(768,768)):
+def square_image_768(img, size=(1024,1024)):
     original_image_path = os.path.join(output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
     h, w = img.shape[:2]
     c = img.shape[2] if len(img.shape)>2 else 1
@@ -31,8 +31,8 @@ def square_image_768(img, size=(768,768)):
         mask = np.zeros((dif, dif, c), dtype=img.dtype)
         mask[y_pos:y_pos+h, x_pos:x_pos+w, :] = img[:h, :w, :]
     
-    width = 768
-    height = 768
+    width = 1024
+    height = 1024
     dim = (width, height)
 
     resized = cv2.resize(mask, dim, interpolation = cv2.INTER_AREA)

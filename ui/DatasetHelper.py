@@ -1,3 +1,5 @@
+# this is the init UI class
+
 import tkinter
 from tkinter import messagebox
 import customtkinter
@@ -45,7 +47,7 @@ class App(customtkinter.CTk):
         self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text="AB_Location_V#.YY")
         self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
 
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Normalizer 768", command=self.normalizer)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Normalizer 1024", command=self.normalizer)
         self.sidebar_button_1.grid(row=2, column=0, padx=gpadx, pady=gpady)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Augmentation", command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=3, column=0, padx=gpadx, pady=gpady)
