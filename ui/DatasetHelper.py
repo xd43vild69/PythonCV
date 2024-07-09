@@ -206,10 +206,10 @@ class App(customtkinter.CTk):
         output_lora = f'  \"output_name\":\"{self.LORA}", '
         sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()}", '
 
-        data[32] = r"" + logging_dir.replace("\\", "\\\\") + "\n"
-        data[59] = r"" + output_dir.replace("\\", "\\\\") + "\n"
-        data[60] = r"" + output_lora.replace("\\", "\\\\") + "\n"
-        data[86] = r"" + train_data_dir.replace("\\", "\\\\") + "\n"        
+        data[32] = r"" + logging_dir.replace("\\", "\/") + "\n"
+        data[59] = r"" + output_dir.replace("\\", "\/") + "\n"
+        data[60] = r"" + output_lora.replace("\\", "\/") + "\n"
+        data[86] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
         data[70] = sample_prompts + "\n"
 
         if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json'):
