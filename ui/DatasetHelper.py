@@ -44,7 +44,10 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Preparation", font=customtkinter.CTkFont(size=12, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=0, pady=gpady)
         
-        self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text="AB_Location_V#.YY")
+        self.lora_version = str(self.get_last_lora_version())
+        self.lora_name = "xl_Theme_v" + self.lora_version
+
+        self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text=self.lora_name)
         self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Normalizer 1024", command=self.normalizer)
@@ -94,11 +97,22 @@ class App(customtkinter.CTk):
         self.buttonRecalculate = customtkinter.CTkButton(self, text="Calculation", command=self.recalculate)
         self.buttonRecalculate.place(x=200, y=360)
 
-        self.buttonCreateStructure = customtkinter.CTkButton(self, text="Create Structure", command=self.createStructure)
+        self.buttonCreateStructure = customtkinter.CTkButton(self, text="Create 1.5", command=self.createStructure)
         self.buttonCreateStructure.place(x=360, y=360)
 
         self.buttonClean = customtkinter.CTkButton(self, text="Clean", command=self.cleanFiles)
         self.buttonClean.place(x=200, y=410)        
+
+        self.buttonCreateStructureXL = customtkinter.CTkButton(self, text="Create XL", command=self.createStructureXL)
+        self.buttonCreateStructureXL.place(x=360, y=410)
+
+    def get_last_lora_version(self):            
+        file1 = open("LoraCounter.txt", "r+")
+        lora_version = int(file1.read()) + 1
+        file2 = open("LoraCounter.txt", "w")
+        file2.write(str(lora_version))
+        file2.close()
+        return lora_version
 
     def sidebar_button_event(self):
         print("sidebar_button click")
@@ -111,7 +125,7 @@ class App(customtkinter.CTk):
 
     def normalizer(self):
         if (self.validationName()):
-            normalizer = Normalizer(self.siderbar_loraValue.get())
+            normalizer = Normalizer(self.siderbar_loraValue)
         
         self.finish_button_event()
         return
@@ -123,7 +137,7 @@ class App(customtkinter.CTk):
     def selectInputFiles(self):
         if (self.validationName()):
             
-            self.LORA = self.siderbar_loraValue.get()
+            self.LORA = self.siderbar_loraValue
 
             dir_path = filedialog.askdirectory(title="Select input directory")
             quantity_imgs = self.countFiles(dir_path) / 2
@@ -165,6 +179,29 @@ class App(customtkinter.CTk):
         self.labelTitle.configure(text = f'Lora Helper :')
         return
 
+    def createStructureXL(self):
+        try:
+            path_dir = Path(self.sourceEntry.get())
+            baseName = os.path.basename(path_dir)
+
+            if not os.path.exists(f'{path_dir.parent.absolute()}\lora_{baseName}'):
+                os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}')
+                os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\image')
+                os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\log')
+                os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\model')
+                os.makedirs(f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
+                copy_tree(self.sourceEntry.get(), f'{path_dir.parent.absolute()}\lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
+                self.createLog(f'{path_dir.parent.absolute()}\lora_{self.LORA}')
+                self.createConfigJsonXL()
+                self.setKeywordLora()
+                self.finish_button_event()
+            else:
+                print("Folder already exists")
+        except Exception as e:
+            messagebox.showinfo("Ex", e)            
+                
+        return
+
     def createStructure(self):
         path_dir = Path(self.sourceEntry.get())
         baseName = os.path.basename(path_dir)
@@ -200,15 +237,15 @@ class App(customtkinter.CTk):
             # read a list of lines into data
             data = file.readlines()
 
-        logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{self.LORA}\\log", '
-        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{self.LORA}\\model", '
-        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{self.LORA}\\image", '
+        logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{self.LORA}_15\\log", '
+        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{self.LORA}_15\\model", '
+        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{self.LORA}_15\\image", '
         output_lora = f'  \"output_name\":\"{self.LORA}", '
         sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()}", '
 
-        data[32] = r"" + logging_dir.replace("\\", "\/") + "\n"
-        data[59] = r"" + output_dir.replace("\\", "\/") + "\n"
-        data[60] = r"" + output_lora.replace("\\", "\/") + "\n"
+        data[62] = r"" + logging_dir.replace("\\", "\/") + "\n"
+        data[105] = r"" + output_dir.replace("\\", "\/") + "\n"
+        data[106] = r"" + output_lora.replace("\\", "\/") + "\n"
         data[86] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
         data[70] = sample_prompts + "\n"
 
@@ -217,6 +254,30 @@ class App(customtkinter.CTk):
                 file.writelines( data )
         return
     
+    def createConfigJsonXL(self):    
+        path_dir = Path(self.sourceEntry.get())
+
+        with open('LoraD13_XL.json', 'r') as file:
+            # read a list of lines into data
+            data = file.readlines()
+
+        logging_dir = f'  \"logging_dir\":\"{path_dir.parent.absolute()}\\lora_{self.LORA}_xl\\log", '
+        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(path_dir.parent.absolute())}\\lora_{self.LORA}_xl\\model", '
+        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(path_dir.parent.absolute())}\\lora_{self.LORA}_xl\\image", '
+        output_lora = f'  \"output_name\":\"{self.LORA}", '
+        sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()}", '
+
+        data[61] = r"" + logging_dir.replace("\\", "\/") + "\n"
+        data[104] = r"" + output_dir.replace("\\", "\/") + "\n"
+        data[105] = r"" + output_lora.replace("\\", "\/") + "\n"
+        data[140] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
+        data[118] = sample_prompts + "\n"
+
+        if not os.path.exists(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json'):
+            with open(f'{path_dir.parent.absolute()}\\lora_{self.LORA}\\lora_config_{self.LORA}.json', 'w') as file:
+                file.writelines( data )
+        return
+
     def setKeywordLora(self):
         path_dir = Path(self.sourceEntry.get())
 
@@ -246,12 +307,19 @@ class App(customtkinter.CTk):
         return data        
     
     def validationName(self):
-        if (self.siderbar_loraValue.get() == ""):
+        if (self.siderbar_loraValue == ""):
             print("No lora name defined")
             return False
         else:
-            return True
 
+            try:
+                new_name = self.siderbar_loraValue + "_v" + self.lora_version
+                self.siderbar_loraValue = new_name
+            except:
+                new_name = self.siderbar_loraValue.get() + "_v" + self.lora_version  
+                self.siderbar_loraValue = new_name                              
+            
+            return True
 
 if __name__ == "__main__":
     app = App()
