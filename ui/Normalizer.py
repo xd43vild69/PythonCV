@@ -14,7 +14,7 @@ class Normalizer:
         print("Please select the source directory...")
         
         input_dir = filedialog.askdirectory(title="Select source directory")
-        self.output_dir = input_dir + '_n'
+        self.output_dir = input_dir + '_N'
 
         # If output directory does not exist, create it
         if not os.path.exists(self.output_dir):
@@ -32,12 +32,14 @@ class Normalizer:
         
         print("Processing images...")
         try:
+            counter = 1
             # Loop through all image files in the input directory
             for image_path in image_paths:
-                try:
+                try:                    
                     print(f"Processing image: {image_path}")
                     image = cv2.imread(image_path)
-                    self.square_image_768(image, image_path)
+                    self.square_image_1024(image, image_path, counter)
+                    counter += 1
                 except:
                     print("img exception")
 
@@ -47,9 +49,10 @@ class Normalizer:
             print("Data normalization interrupted by the user.")
             sys.exit(0)
 
-    def square_image_768(self, img, image_path, size=(1024,1024)):
+    def square_image_1024(self, img, image_path, counter, size=(1024,1024)):
 
-        original_image_path = os.path.join(self.output_dir, f"orig_{os.path.splitext(os.path.basename(image_path))[0]}.png")    
+        #original_image_path = os.path.join(self.output_dir, f"n_{os.path.splitext(os.path.basename(image_path))[0]}_{counter}.png")    
+        original_image_path = os.path.join(self.output_dir, f"n_{counter}.png")    
         h, w = img.shape[:2]
         c = img.shape[2] if len(img.shape)>2 else 1
 
