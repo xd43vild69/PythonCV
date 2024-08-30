@@ -46,6 +46,7 @@ class App(customtkinter.CTk):
         
         self.lora_version = str(self.get_last_lora_version())
         self.lora_name = "xl_Theme_v" + self.lora_version
+        self.lora_name_version = ""
 
         self.siderbar_loraValue = customtkinter.CTkEntry(self.sidebar_frame, placeholder_text=self.lora_name)
         self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
@@ -125,7 +126,7 @@ class App(customtkinter.CTk):
 
     def normalizer(self):
         if (self.validationName()):
-            normalizer = Normalizer(self.siderbar_loraValue)
+            normalizer = Normalizer(self.lora_name_version)
         
         self.finish_button_event()
         return
@@ -135,9 +136,10 @@ class App(customtkinter.CTk):
         print("Normalizer:", dialog.get_input())
 
     def selectInputFiles(self):
+        self.cleanFiles()
         if (self.validationName()):
             
-            self.LORA = self.siderbar_loraValue
+            self.LORA = self.lora_name_version
 
             dir_path = filedialog.askdirectory(title="Select input directory")
             quantity_imgs = self.countFiles(dir_path) / 2
@@ -286,11 +288,14 @@ class App(customtkinter.CTk):
         files = glob.glob(path_init + "\\*.txt")
         data = ""
         for file in files:
-            with open(file, 'r') as f:
-                data = f.readlines()
-            dataAlteration = self.LORA + ", " + data[0]
-            with open(file, 'w', encoding='utf-8') as f:
-                f.write(dataAlteration)
+            try:
+                with open(file, 'r') as f:
+                    data = f.readlines()
+                dataAlteration = self.LORA + ", " + data[0]
+                with open(file, 'w', encoding='utf-8') as f:
+                    f.write(dataAlteration)
+            except:
+                print("Keyword exception on file")
 
         return           
 
@@ -314,10 +319,10 @@ class App(customtkinter.CTk):
 
             try:
                 new_name = self.siderbar_loraValue + "_v" + self.lora_version
-                self.siderbar_loraValue = new_name
+                self.lora_name_version = new_name
             except:
                 new_name = self.siderbar_loraValue.get() + "_v" + self.lora_version  
-                self.siderbar_loraValue = new_name                              
+                self.lora_name_version = new_name                              
             
             return True
 

@@ -68,7 +68,7 @@
   "resume": "",
   "sample_every_n_epochs": 0,
   "sample_every_n_steps": 200,
-  "sample_prompts": "lvwoman, a woman, pale white skin, 1girl, red nails, toenail polish, standing, fingernails, solo, full body, makeup, looking at viewer, brown hair, barefoot",
+  "sample_prompts": "woman",
   "sample_sampler": "euler_a",
   "save_every_n_epochs": 1,
   "save_every_n_steps": 0,
