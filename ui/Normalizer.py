@@ -21,6 +21,7 @@ class Normalizer:
             os.makedirs(self.output_dir)
 
         self.process(input_dir)
+        return input_dir
 
     def process(self, input_dir):
 
