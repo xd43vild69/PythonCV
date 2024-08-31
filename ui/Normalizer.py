@@ -9,29 +9,23 @@ class Normalizer:
 
     output_dir = ""
 
-    def __init__(self, name):
-        # Ask user to select input directory
-        print("Please select the source directory...")
-        
-        input_dir = filedialog.askdirectory(title="Select source directory")
-        self.output_dir = input_dir + '_N'
-
-        # If output directory does not exist, create it
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-
+    @property
+    def attr(self):  
+        return self.__attr
+    
+    def __init__(self, input_dir, destination_dir):    
+        self.output_dir = destination_dir     
         self.process(input_dir)
-        return input_dir
+        self.__attr = input_dir    
 
-    def process(self, input_dir):
-
+    def process(self, input_dir):        
         # Process images in input directory
         image_formats = ('*.jpg', '*.jpeg', '*.png', '*.bmp', '*.gif', '*.tiff')
         image_paths = []
         for format in image_formats:
             image_paths.extend(glob(os.path.join(input_dir, format)))
         
-        print("Processing images...")
+        print("Processing images...")   
         try:
             counter = 1
             # Loop through all image files in the input directory

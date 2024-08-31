@@ -132,13 +132,22 @@ class App(customtkinter.CTk):
 
     def normalizer(self):
         if (self.validationName()):
-            self.normalizer_path = Normalizer(self.lora_name_version)
-        
+            print("Please select the source directory...")        
+            
+            input_dir = filedialog.askdirectory(title="Select source directory")
+            self.normalizer_path = input_dir + '_N'
+
+            # If output directory does not exist, create it
+            if not os.path.exists(self.normalizer_path):
+                os.makedirs(self.normalizer_path)
+    
+            Normalizer(input_dir, self.normalizer_path)
+
         self.finish_button_event()
         return
     
     def captationizer(self):
-        if (self.normalizer_path == ""):
+        if (self.normalizer_path != ""):
             path_joy_captation = 'C:\\dev\\joy_caption\\joy-caption-pre-alpha\\app.py'
             subprocess.call(["python", path_joy_captation, self.normalizer_path])
             print("CaptationFinished")
