@@ -107,18 +107,31 @@ class App(customtkinter.CTk):
         self.buttonClean = customtkinter.CTkButton(self, text="Clean", command=self.cleanFiles)
         self.buttonClean.place(x=200, y=410)
 
-    def get_last_lora_version(self):            
-        file1 = open("LoraCounter.txt", "r+")
-        lora_version = int(file1.read()) + 1
-        file2 = open("LoraCounter.txt", "w")
-        file2.write(str(lora_version))
-        file2.close()
+    def get_last_lora_version(self):
+        try:
+            with open("LoraCounter.txt", "r") as file:
+                lora_version = int(file.read()) + 1
+        except FileNotFoundError:
+            lora_version = 1
+        except ValueError:
+            lora_version = 1
+
+        with open("LoraCounter.txt", "w") as file:
+            file.write(str(lora_version))
+
         return lora_version
     
     def get_lora_training_folder(self):
-        file1 = open("LoraCTrainingFolder.txt", "r+")
-        lora_training_folder = file1.read()
-        file1.close()
+        try:
+            with open("LoraCTrainingFolder.txt", "r") as file:
+                lora_training_folder = file.read().strip()  # Use strip() to remove any extra whitespace or newlines
+        except FileNotFoundError:
+            print("LoraCTrainingFolder.txt not found.")
+            lora_training_folder = ""
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            lora_training_folder = ""
+
         return lora_training_folder
 
     def sidebar_button_event(self):
@@ -131,55 +144,100 @@ class App(customtkinter.CTk):
         messagebox.showinfo("Complete", "Done")
 
     def normalizer(self):
-        if (self.validationName()):
-            print("Please select the source directory...")        
-            
-            input_dir = filedialog.askdirectory(title="Select source directory")
-            self.normalizer_path = input_dir + '_N'
+        if not self.validationName():
+            print("Please select the source directory...")
+            return  # Exit early if validation fails
 
-            # If output directory does not exist, create it
-            if not os.path.exists(self.normalizer_path):
-                os.makedirs(self.normalizer_path)
-    
+        input_dir = filedialog.askdirectory(title="Select source directory")
+        
+        if not input_dir:  # Handle case where user cancels directory selection
+            print("No directory selected. Operation canceled.")
+            return
+
+        self.normalizer_path = input_dir + '_N'
+
+        # If output directory does not exist, create it
+        if not os.path.exists(self.normalizer_path):
+            os.makedirs(self.normalizer_path)
+        
+        try:
             Normalizer(input_dir, self.normalizer_path)
+        except Exception as e:
+            print(f"An error occurred during normalization: {e}")
+            return
 
         self.finish_button_event()
-        return
     
     def captationizer(self):
-        if (self.normalizer_path != ""):
-            path_joy_captation = 'C:\\dev\\joy_caption\\joy-caption-pre-alpha\\app.py'
-            subprocess.call(["python", path_joy_captation, self.normalizer_path])
-            print("CaptationFinished")
-        else:
-            messagebox.showinfo("there is not a folder to process")
+        if not self.normalizer_path:
+            messagebox.showinfo("Error", "There is no folder to process.")
+            return  # Exit early if there is no folder to process
+
+        path_joy_captation = 'C:\\dev\\joy_caption\\joy-caption-pre-alpha\\app.py'
+        
+        try:
+            # Use subprocess.run for better exception handling
+            subprocess.run(["python", path_joy_captation, self.normalizer_path], check=True)
+            print("Captation Finished")
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"Captation process failed: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
     
     def open_input_dialog_normalize_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type lora name:", title="Normalizer")
+        user_input = dialog.get_input()
+    
+        if user_input:  # Check if input is not empty or None
+            print("Normalizer:", user_input)
+        else:
+            print("No input provided.")
+
         print("Normalizer:", dialog.get_input())
 
     def selectInputFiles(self):
-        self.cleanFiles()
-        if (self.validationName()):
-            
-            self.LORA = self.lora_name_version
 
-            dir_path = filedialog.askdirectory(title="Select input directory")
-            quantity_imgs = self.countFiles(dir_path) / 2
+        self.cleanFiles()  # Clear any existing values in the entry fields
 
-            if quantity_imgs <= 0:
-                print("Empty folder")
-                return
+        if not self.validationName():  # Validate first
+            return  # Exit early if validation fails
 
-            self.labelTitle.configure(text = f'Source : {os.path.basename(dir_path)}')
+        self.LORA = self.lora_name_version  # Set LORA variable
 
-            self.sourceEntry.insert(0,dir_path)    
-            self.quantityFiles.insert(0, quantity_imgs)
-            self.quantityEpochs.insert(0, 1)
-            self.quantityBatchSize.insert(0, 1)
-            self.quantityRepeatition.insert(0, 20)
-            totalCalculation = quantity_imgs * 1 * 20 / 2
-            self.quantityTotalTrain.insert(0, totalCalculation)
+        # Prompt the user to select an input directory
+        dir_path = filedialog.askdirectory(title="Select input directory")
+
+        if not dir_path:  # Handle case where the user cancels the directory selection
+            print("No directory selected. Operation canceled.")
+            return
+
+        # Count the number of files (assuming every image has a corresponding pair, hence divided by 2)
+        quantity_imgs = self.countFiles(dir_path) / 2
+
+        if quantity_imgs <= 0:  # If the folder is empty, exit early
+            print("Empty folder")
+            return
+
+        # Update the UI with the selected source directory
+        self.labelTitle.configure(text=f'Source: {os.path.basename(dir_path)}')
+    
+        # Insert the new values into the respective input fields
+        self.sourceEntry.insert(0, dir_path)
+        self.quantityFiles.insert(0, quantity_imgs)
+
+        # Default values for epochs, batch size, and repetitions
+        default_epochs = 1
+        default_batch_size = 1
+        default_repetitions = 20
+
+        self.quantityEpochs.insert(0, default_epochs)
+        self.quantityBatchSize.insert(0, default_batch_size)
+        self.quantityRepeatition.insert(0, default_repetitions)
+
+        # Calculate the total training steps
+        totalCalculation = (quantity_imgs * default_epochs * default_repetitions) / 2
+        self.quantityTotalTrain.insert(0, totalCalculation)
+
         return
 
     def countFiles(self, dir_path):
@@ -278,8 +336,8 @@ class App(customtkinter.CTk):
         sample_prompts = f'  \"sample_prompts\":\"{self.getInitialPrompt()}", '
 
         #data[61] = r"" + logging_dir.replace("\\", "\/") + "\n"
-        data[124] = r"" + output_dir.replace("\\", "\/") + "\n"
-        data[124] = r"" + output_lora.replace("\\", "\/") + "\n"
+        data[122] = r"" + output_dir.replace("\\", "\/") + "\n"
+        data[123] = r"" + output_lora.replace("\\", "\/") + "\n"
         data[165] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
         data[138] = sample_prompts + "\n"
 
