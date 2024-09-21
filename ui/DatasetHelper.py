@@ -339,7 +339,7 @@ class App(customtkinter.CTk):
         data[122] = r"" + output_dir.replace("\\", "\/") + "\n"
         data[123] = r"" + output_lora.replace("\\", "\/") + "\n"
         data[165] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
-        data[138] = sample_prompts + "\n"
+        data[136] = sample_prompts + "\n"
 
         if not os.path.exists(f'{self.absolute_path}\\{self.lora_version}_lora_{self.LORA}\\lora_config_{self.LORA}_flux.json'):
             with open(f'{self.absolute_path}\\{self.lora_version}_lora_{self.LORA}\\lora_config_{self.LORA}_flux.json', 'w') as file:
@@ -390,16 +390,30 @@ class App(customtkinter.CTk):
         return           
 
     def getInitialPrompt(self):
-        path_dir = Path(self.sourceEntry.get())        
+        # Get the directory path from the sourceEntry
+        path_dir = Path(self.sourceEntry.get())
+        
+        # Construct the path to the target text files
+        path_init = os.path.join(self.absolute_path, f'{self.lora_version}_lora_{self.LORA}', 'image', f'{self.quantityRepeatition.get()}_{self.LORA}')
+        
+        # Get all .txt files from the constructed path
+        files = glob.glob(os.path.join(path_init, "*.txt"))
 
-        path_init = f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}'
+        # Check if any files were found
+        if not files:
+            print("No text files found in the directory.")
+            return None
 
-        files = glob.glob(path_init + "\\*.txt")
-
+        # Read the first line of the first .txt file found
         data = ""
-        with open(files[0], 'r') as file:
-            data = file.readlines()[0][:-2]
-        return data        
+        try:
+            with open(files[0], 'r') as file:
+                data = file.readline().strip()  # Use strip() to remove line breaks
+        except Exception as e:
+            print(f"Error reading file: {e}")
+            return None
+
+        return data    
     
     def validationName(self):
         if (self.siderbar_loraValue == ""):
