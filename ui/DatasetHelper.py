@@ -58,10 +58,10 @@ class App(customtkinter.CTk):
         self.sidebar_button_1.grid(row=2, column=0, padx=gpadx, pady=gpady)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Augmentation", command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=3, column=0, padx=gpadx, pady=gpady)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.captationizer)
-        self.sidebar_button_3.grid(row=4, column=0, padx=gpadx, pady=gpady)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Test", command=self.test_button_event)
-        self.sidebar_button_3.grid(row=5, column=0, padx=gpadx, pady=gpady)        
+        #self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.captationizer)
+        #self.sidebar_button_3.grid(row=4, column=0, padx=gpadx, pady=gpady)
+        #self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Test", command=self.test_button_event)
+        #self.sidebar_button_3.grid(row=5, column=0, padx=gpadx, pady=gpady)        
 
         # self is the right window place
 
@@ -248,9 +248,33 @@ class App(customtkinter.CTk):
         return count
     
     def recalculate(self):
-        self.quantityTotalTrain.delete(0, tkinter.END)
-        self.totalCalculation = float(self.quantityFiles.get()) * int(self.quantityEpochs.get()) * int(self.quantityRepeatition.get()) / int(self.quantityBatchSize.get())
-        self.quantityTotalTrain.insert(0, self.totalCalculation)
+        try:
+            # Clear the total quantity entry
+            self.quantityTotalTrain.delete(0, tkinter.END)
+            
+            # Retrieve and validate input values
+            quantity_files = float(self.quantityFiles.get())
+            quantity_epochs = int(self.quantityEpochs.get())
+            quantity_repeats = int(self.quantityRepeatition.get())
+            quantity_batch_size = int(self.quantityBatchSize.get())
+            
+            # Check for division by zero
+            if quantity_batch_size == 0:
+                messagebox.showinfo("Error", "Batch size cannot be zero.")
+                return
+            
+            # Calculate total training quantity
+            self.totalCalculation = quantity_files * quantity_epochs * quantity_repeats / quantity_batch_size
+            
+            # Update the total quantity entry
+            self.quantityTotalTrain.insert(0, self.totalCalculation)
+            
+        except ValueError:
+            messagebox.showinfo("Error", "Please enter valid numbers in all fields.")
+        except Exception as e:
+            messagebox.showinfo("Error", str(e))
+
+        return
 
     def cleanFiles(self):
         self.sourceEntry.delete(0, tkinter.END)
@@ -267,38 +291,67 @@ class App(customtkinter.CTk):
         self.finish_button_event()
 
     def createStructure(self):
-        try:            
+        try:
             path_dir = Path(self.sourceEntry.get())
-            baseName = os.path.basename(path_dir)
+            base_name = path_dir.name
 
-            if not os.path.exists(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}'):
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\image')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\log')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\model_15')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\model_xl')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\model_flux')
-                os.makedirs(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
-                copy_tree(self.sourceEntry.get(), f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}\image\{self.quantityRepeatition.get()}_{self.LORA}')
-                self.createLog(f'{self.absolute_path}\{self.lora_version}_lora_{self.LORA}')
+            # Base directory for the Lora model
+            lora_base_path = Path(self.absolute_path) / f'{self.lora_version}_lora_{self.LORA}'
+
+            # List of subdirectories to create
+            subdirs = [
+                'image',
+                'log',
+                'model_15',
+                'model_xl',
+                'model_flux',
+                f'image/{self.quantityRepeatition.get()}_{self.LORA}'
+            ]
+
+            # Create base directory if it doesn't exist
+            if not lora_base_path.exists():
+                lora_base_path.mkdir(parents=True)
+
+                # Create subdirectories
+                for subdir in subdirs:
+                    (lora_base_path / subdir).mkdir(parents=True)
+
+                # Copy source files to the new image directory
+                copy_tree(str(path_dir), str(lora_base_path / f'image/{self.quantityRepeatition.get()}_{self.LORA}'))
+
+                # Create log and configuration files
+                self.createLog(str(lora_base_path))
                 self.createConfigJson()
                 self.createConfigJsonXL()
                 self.createConfigJsonFlux()
-                self.setKeywordLora(    )
+                self.setKeywordLora()
             else:
                 print("Folder already exists")
         except Exception as e:
-                messagebox.showinfo("Ex", e)            
-                
+            messagebox.showinfo("Error", str(e))
+
         return
 
     def createLog(self, path):
-                
-        file_name = f'{path}\log-{datetime.date.today()}_{uuid.uuid4()}.txt'
-        text1 = F'quantity files: {self.quantityFiles.get()}, quantity epochs: {self.quantityEpochs.get()}, quantity batch size: {self.quantityBatchSize.get()}, quantity repeats: {self.quantityRepeatition.get()}, total calculation: {self.quantityTotalTrain.get()}'
+        # Generate a unique filename for the log
+        file_name = os.path.join(path, f'log-{datetime.date.today()}_{uuid.uuid4()}.txt')
 
-        with open(file_name, 'w') as file:
-            file.write(text1)
+        # Create a log message with configuration details
+        log_message = (
+            f'Quantity files: {self.quantityFiles.get()}, '
+            f'Quantity epochs: {self.quantityEpochs.get()}, '
+            f'Quantity batch size: {self.quantityBatchSize.get()}, '
+            f'Quantity repeats: {self.quantityRepeatition.get()}, '
+            f'Total calculation: {self.quantityTotalTrain.get()}'
+        )
+
+        try:
+            # Write the log message to the file
+            with open(file_name, 'w', encoding='utf-8') as file:
+                file.write(log_message)
+        except Exception as e:
+            print(f"Error creating log file: {e}")
+
         return
 
     def createConfigJson(self):    
