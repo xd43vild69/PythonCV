@@ -7,12 +7,20 @@ from pathlib import Path
 import pathlib
 from file_utils import FileUtils
 from lora import Lora 
+import glob
 
 class LoraUtils:
     
     def __init__(self, lora:Lora):
         super().__init__()        
         self.lora = lora
+        self.logging_dir = ""
+        self.output_dir_15 = ""
+        self.output_dir_xl = ""
+        self.output_dir_flux = ""
+        self.train_data_dir = ""
+        self.output_lora = ""
+        self.sample_prompts = ""
 
     def get_last_lora_version(self):
         try:
@@ -64,11 +72,11 @@ class LoraUtils:
                     copy_tree(str(path_dir), str(lora_base_path / f'image/{self.lora.total_repeats}_{self.lora.LORA}'))
 
                     # Create log and configuration files
-                    #self.createLog(str(lora_base_path))
-                    #self.createConfigJson_15()
-                    #self.createConfigJsonXL()
-                    #self.createConfigJsonFlux()
-                    #self.setKeywordLora()
+                    self.createLog(str(lora_base_path))
+                    self.createConfigJson_15()
+                    self.createConfigJsonXL()
+                    self.createConfigJsonFlux()
+                    self.set_lora_keyword()
                 else:
                     print("Folder already exists")
             except Exception as e:
@@ -90,7 +98,6 @@ class LoraUtils:
         )
 
         try:
-            # Write the log message to the file
             with open(file_name, 'w', encoding='utf-8') as file:
                 file.write(log_message)
         except Exception as e:
@@ -99,78 +106,74 @@ class LoraUtils:
         return
 
     def createConfigJson_15(self):    
-        path_dir = Path(self.lora.source)
-
         with open('LoraD13.json', 'r') as file:
-            # read a list of lines into data
             data = file.readlines()
 
-        logging_dir = f'  \"logging_dir\":\"{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\log", '
-        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_xl", '
-        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\image", '
-        output_lora = f'  \"output_name\":\"{self.lora.LORA}", '
-        sample_prompts = f'  \"sample_prompts\":\"{FileUtils.getInitialPrompt("")}", '
+        data[59] = r"" + self.output_dir_15.replace("\\", "\/") + "\n"
+        data[60] = r"" + self.output_lora.replace("\\", "\/") + "\n"
+        data[70] = r"" + self.train_data_dir.replace("\\", "\/") + "\n"        
+        data[86] = self.sample_prompts + "\n"
 
-        data[59] = r"" + output_dir.replace("\\", "\/") + "\n"
-        data[60] = r"" + output_lora.replace("\\", "\/") + "\n"
-        data[70] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
-        data[86] = sample_prompts + "\n"
+        self.set_to_disk(data, "15")
+        return
+    
+    def createConfigJsonXL(self):    
+        with open('LoraD13_XL.json', 'r') as file:
+            data = file.readlines()
 
-        if not os.path.exists(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json'):
-            with open(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json', 'w') as file:
-                file.writelines( data )
+        data[61] = r"" + self.logging_dir.replace("\\", "\/") + "\n"
+        data[104] = r"" + self.output_dir_xl.replace("\\", "\/") + "\n"
+        data[105] = r"" + self.output_lora.replace("\\", "\/") + "\n"
+        data[140] = r"" + self.train_data_dir.replace("\\", "\/") + "\n"        
+        data[118] = self.sample_prompts + "\n"
+
+        self.set_to_disk(data, "xl")
         return
     
     def createConfigJsonFlux(self):    
-        path_dir = Path(self.lora.source)
-
         with open('LoraD13_Flux.json', 'r') as file:
-            # read a list of lines into data
             data = file.readlines()
 
-        logging_dir = f'  \"logging_dir\":\"{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\log", '
-        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_xl", '
-        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\image", '
-        output_lora = f'  \"output_name\":\"{self.lora.LORA}", '
-        sample_prompts = f'  \"sample_prompts\":\"{FileUtils.getInitialPrompt("")}", '
+        data[122] = r"" + self.output_dir_flux.replace("\\", "\/") + "\n"
+        data[123] = r"" + self.output_lora.replace("\\", "\/") + "\n"
+        data[165] = r"" + self.train_data_dir.replace("\\", "\/") + "\n"        
+        data[136] = self.sample_prompts + "\n"
 
-        #data[61] = r"" + logging_dir.replace("\\", "\/") + "\n"
-        data[122] = r"" + output_dir.replace("\\", "\/") + "\n"
-        data[123] = r"" + output_lora.replace("\\", "\/") + "\n"
-        data[165] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
-        data[136] = sample_prompts + "\n"
-
-        if not os.path.exists(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json'):
-            with open(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json', 'w') as file:
-                file.writelines( data )
+        self.set_to_disk(data, "flux")        
         return
+        
+    def get_initial_config(self):
+        self.logging_dir = f'  \"logging_dir\":\"{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\log", '
+        self.output_dir_15 =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_15", '
+        self.output_dir_xl =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_xl", '
+        self.output_dir_flux =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_flux", '
+        self.train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\image", '
+        self.output_lora = f'  \"output_name\":\"{self.lora.LORA}", '
+        self.sample_prompts = f'  \"sample_prompts\":\"{FileUtils.getInitialPrompt("")}", '
 
-    def createConfigJsonXL(self):    
-        path_dir = Path(self.lora.source)
-
-        with open('LoraD13_XL.json', 'r') as file:
-            # read a list of lines into data
-            data = file.readlines()
-
-        logging_dir = f'  \"logging_dir\":\"{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\log", '
-        output_dir =  f'  \"output_dir\":\"{pathlib.PureWindowsPath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\model_xl", '
-        train_data_dir =  f'  \"train_data_dir\":\"{pathlib.PurePath(self.lora.path)}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\image", '
-        output_lora = f'  \"output_name\":\"{self.lora.LORA}", '
-        sample_prompts = f'  \"sample_prompts\":\"{FileUtils.getInitialPrompt("")}", '
-
-        data[61] = r"" + logging_dir.replace("\\", "\/") + "\n"
-        data[104] = r"" + output_dir.replace("\\", "\/") + "\n"
-        data[105] = r"" + output_lora.replace("\\", "\/") + "\n"
-        data[140] = r"" + train_data_dir.replace("\\", "\/") + "\n"        
-        data[118] = sample_prompts + "\n"
-
-        if not os.path.exists(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json'):
-            with open(f'{self.lora.path}\\{self.lora.lora_version}_lora_{self.lora.LORA}\\lora_config_{self.lora.LORA}_xl.json', 'w') as file:
+    def set_to_disk(self, data, version):
+        config_file = Path(self.lora.path) / self.lora.lora_name / f'lora_config_{self.lora.LORA}_{version}.json'
+        if not os.path.exists(config_file):
+            with open(config_file, 'w') as file:
                 file.writelines( data )
-        return
 
-    
-    
+    def set_lora_keyword(self):
+
+        path_init = str(Path(self.lora.path) / self.lora.lora_name / "image" / f'{self.lora.total_repeats}_{self.lora.LORA}')
+
+        files = glob.glob(path_init + "\\*.txt")
+        data = ""
+        for file in files:
+            try:
+                with open(file, 'r') as f:
+                    data = f.readlines()
+                dataAlteration = self.lora.LORA + ", " + data[0]
+                with open(file, 'w', encoding='utf-8') as f:
+                    f.write(dataAlteration)
+            except:
+                print("Keyword exception on file")
+
+        return   
      
 
     
