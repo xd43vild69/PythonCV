@@ -1,10 +1,7 @@
 class Lora:
 
-    def __init__(self):
+    def __init__(self, path, name, lora, version, source, total_repetitions, total_files, total_epochs, total_batch, total_steps):
         super().__init__()
-        self.pathx = ""
-
-    def update_base(self, path, name, lora, version, source, total_repetitions, total_files, total_epochs, total_batch, total_steps):
         self.path = path
         self.lora_name = name
         self.LORA = lora

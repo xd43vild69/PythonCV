@@ -45,7 +45,7 @@ class LoraUtils:
             lora_training_folder = ""
         return lora_training_folder
 
-    def createStructure(self):
+    def create_lora_structure(self):
         try:
             path_dir = Path(self.lora.source)
             # Base directory for the Lora model
