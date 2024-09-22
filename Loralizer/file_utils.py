@@ -40,7 +40,8 @@ class FileUtils:
     def get_lora_training_folder():
         try:
             with open("LoraCTrainingFolder.txt", "r") as file:
-                lora_training_folder = file.read().strip()  # Use strip() to remove any extra whitespace or newlines
+                # Use strip() to remove any extra whitespace or newlines
+                lora_training_folder = file.read().strip()
         except FileNotFoundError:
             print("LoraCTrainingFolder.txt not found.")
             lora_training_folder = ""
@@ -51,7 +52,7 @@ class FileUtils:
         return lora_training_folder
 
     @staticmethod
-    def getInitialPrompt(path_init):                
+    def getInitialPrompt(path_init):
         # Get all .txt files from the constructed path
         files = glob.glob(os.path.join(path_init, "*.txt"))
 
@@ -69,4 +70,4 @@ class FileUtils:
             print(f"Error reading file: {e}")
             return None
 
-        return data  
+        return data
