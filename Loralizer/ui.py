@@ -14,52 +14,28 @@ customtkinter.set_default_color_theme("blue")
 
 class App(customtkinter.CTk):
 
+    # Constants
+    WINDOW_WIDTH = 600
+    WINDOW_HEIGHT = 580
+    SIDEBAR_WIDTH = 140
+    PADDING_X = 20
+    PADDING_Y = 10
+    FONT_SIZE = 12
+    FONT_WEIGHT = "bold"
+
     def __init__(self):
         super().__init__()
 
-        self.title("Dataset helper")
-        self.geometry(f"{600}x{580}")
+        self.configure_window()
+        self.configure_grid_layout()
+        self.create_sidebar()
+        self.initialize_file_info()
+        self.create_sidebar_widgets()
 
-        # configure grid layout (4x4)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
-
-        # create sidebar frame with widgets
-        self.sidebar_frame = customtkinter.CTkFrame(
-            self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(6, weight=1)
-
-        gpady = 10
-        gpadx = 20
-
-        self.logo_label = customtkinter.CTkLabel(
-            self.sidebar_frame, text="Preparation", font=customtkinter.CTkFont(size=12, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=0, pady=gpady)
-
-        self.lora_version = str(FileUtils.get_last_lora_version())
-        self.lora_name = "model" + self.lora_version
-        self.lora_name_version = ""
-        self.normalizer_path = ""
-        self.path = str(FileUtils.get_lora_training_folder())
-
-        self.siderbar_loraValue = customtkinter.CTkEntry(
-            self.sidebar_frame, placeholder_text=self.lora_name)
-        self.siderbar_loraValue.grid(row=1, column=0, padx=gpadx, pady=gpady)
-
-        self.sidebar_button_1 = customtkinter.CTkButton(
-            self.sidebar_frame, text="Normalizer 1024", command=self.normalizer)
-        self.sidebar_button_1.grid(row=2, column=0, padx=gpadx, pady=gpady)
-        self.sidebar_button_2 = customtkinter.CTkButton(
-            self.sidebar_frame, text="Augmentation", command=self.normalizer)
-        self.sidebar_button_2.grid(row=3, column=0, padx=gpadx, pady=gpady)
         # self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Captation", command=self.captationizer)
         # self.sidebar_button_3.grid(row=4, column=0, padx=gpadx, pady=gpady)
         # self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Test", command=self.test_button_event)
         # self.sidebar_button_3.grid(row=5, column=0, padx=gpadx, pady=gpady)
-
-        # self is the right window place
 
         self.labelTitle = customtkinter.CTkLabel(
             self, text="steps from source", font=customtkinter.CTkFont(size=12, weight="bold"))
@@ -113,6 +89,81 @@ class App(customtkinter.CTk):
         self.buttonClean = customtkinter.CTkButton(
             self, text="clean", command=self.clean_data)
         self.buttonClean.place(x=200, y=410)
+
+    def configure_window(self):
+        """Configure the main window properties."""
+        self.title("Dataset Helper")
+        self.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}")
+
+    def configure_grid_layout(self):
+        """Configure grid layout for window."""
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
+
+    def create_sidebar(self):
+        """Create the sidebar frame."""
+        self.sidebar_frame = customtkinter.CTkFrame(self, width=self.SIDEBAR_WIDTH, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(6, weight=1)
+
+    def initialize_file_info(self):
+        """Retrieve and initialize file info."""
+        try:
+            self.lora_version = str(FileUtils.get_last_lora_version())
+        except Exception as e:
+            print(f"Error retrieving Lora version: {e}")
+            self.lora_version = "1.0"  # Fallback version
+        
+        try:
+            self.path = str(FileUtils.get_lora_training_folder())
+        except Exception as e:
+            print(f"Error retrieving training folder: {e}")
+            self.path = "default/path"  # Fallback path
+
+        self.lora_name = f"model{self.lora_version}"
+        self.lora_name_version = ""
+        self.normalizer_path = ""
+
+    def create_sidebar_widgets(self):
+        """Create widgets for the sidebar."""
+        self.create_logo_label()
+        self.create_lora_entry()
+        self.create_sidebar_buttons()
+
+    def create_logo_label(self):
+        """Create the logo label."""
+        self.logo_label = customtkinter.CTkLabel(
+            self.sidebar_frame, 
+            text="Preparation", 
+            font=customtkinter.CTkFont(size=self.FONT_SIZE, weight=self.FONT_WEIGHT)
+        )
+        self.logo_label.grid(row=0, column=0, padx=0, pady=self.PADDING_Y)
+
+    def create_lora_entry(self):
+        """Create Lora entry field."""
+        self.siderbar_loraValue = customtkinter.CTkEntry(
+            self.sidebar_frame, 
+            placeholder_text=self.lora_name
+        )
+        self.siderbar_loraValue.grid(row=1, column=0, padx=self.PADDING_X, pady=self.PADDING_Y)
+
+    def create_sidebar_buttons(self):
+        """Create sidebar buttons."""
+        self.sidebar_button_1 = customtkinter.CTkButton(
+            self.sidebar_frame, 
+            text="Normalizer 1024", 
+            command=self.normalizer
+        )
+        self.sidebar_button_1.grid(row=2, column=0, padx=self.PADDING_X, pady=self.PADDING_Y)
+
+        self.sidebar_button_2 = customtkinter.CTkButton(
+            self.sidebar_frame, 
+            text="Augmentation", 
+            command=self.normalizer
+        )
+        self.sidebar_button_2.grid(row=3, column=0, padx=self.PADDING_X, pady=self.PADDING_Y)
+
 
     def init_sidebar(self):
         # Sidebar configuration here

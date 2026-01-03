@@ -74,6 +74,7 @@ class LoraUtils:
                           f'image/{self.lora.total_repeats}_{self.lora.LORA}'))
 
                 # Create log and configuration files
+                self.get_initial_config()
                 self.createLog(str(lora_base_path))
                 self.createConfigJson_15()
                 self.createConfigJsonXL()
@@ -114,8 +115,8 @@ class LoraUtils:
 
         data[59] = r"" + self.output_dir_15.replace("\\", "\/") + "\n"
         data[60] = r"" + self.output_lora.replace("\\", "\/") + "\n"
-        data[70] = r"" + self.train_data_dir.replace("\\", "\/") + "\n"
-        data[86] = self.sample_prompts + "\n"
+        data[86] = r"" + self.train_data_dir.replace("\\", "\/") + "\n"
+        data[70] = self.sample_prompts + "\n"
 
         self.set_to_disk(data, "15")
         return
