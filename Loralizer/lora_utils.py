@@ -123,7 +123,7 @@ class LoraUtils:
         return
 
     def createConfigJsonXL(self):
-        with open('LoraD13_XL.json', 'r') as file:
+        with open(os.path.join('Resources', 'LoraD13_XL.json'), 'r') as file:
             data = file.readlines()
 
         data[61] = r"" + self.logging_dir.replace("\\", "\/") + "\n"
@@ -136,7 +136,7 @@ class LoraUtils:
         return
 
     def createConfigJsonFlux(self):
-        with open('LoraD13_Flux.json', 'r') as file:
+        with open(os.path.join('Resources', 'LoraD13_Flux.json'), 'r') as file:
             data = file.readlines()
 
         data[122] = r"" + self.output_dir_flux.replace("\\", "\/") + "\n"
@@ -149,7 +149,7 @@ class LoraUtils:
 
     def createConfigYamlTurbo(self):
         try:
-            with open('LoraD13_zImageTurbo.yaml', 'r') as file:
+            with open(os.path.join('Resources', 'LoraD13_zImageTurbo.yaml'), 'r') as file:
                 data = file.readlines()
 
             # Prepare paths in WSL format

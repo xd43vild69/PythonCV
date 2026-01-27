@@ -95,12 +95,32 @@ class App(ctk.CTk):
             font=ctk.CTkFont(size=12)
         ).grid(row=1, column=0, padx=self.PADDING, pady=(15, 5), sticky="w")
         
+        # Placeholder dinámico
+        placeholder_text = f"xx_part_{self.lora_version}"
+        
         self.lora_name_entry = ctk.CTkEntry(
             self.sidebar,
-            placeholder_text=self.lora_name,
             height=35
         )
         self.lora_name_entry.grid(row=2, column=0, padx=self.PADDING, pady=5, sticky="ew")
+        
+        # Configurar comportamiento del placeholder
+        self.lora_name_entry.insert(0, placeholder_text)
+        default_text_color = self.lora_name_entry.cget("text_color")
+        self.lora_name_entry.configure(text_color="gray")
+        
+        def on_focus_in(event):
+            if self.lora_name_entry.get() == placeholder_text:
+                self.lora_name_entry.delete(0, tk.END)
+                self.lora_name_entry.configure(text_color=default_text_color)
+                
+        def on_focus_out(event):
+            if not self.lora_name_entry.get():
+                self.lora_name_entry.insert(0, placeholder_text)
+                self.lora_name_entry.configure(text_color="gray")
+                
+        self.lora_name_entry.bind("<FocusIn>", on_focus_in)
+        self.lora_name_entry.bind("<FocusOut>", on_focus_out)
         
         # Separador
         ctk.CTkLabel(self.sidebar, text="").grid(row=3, column=0, pady=5)
