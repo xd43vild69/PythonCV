@@ -14,10 +14,11 @@ except Exception:
     requests = None
 
 class NormalizerC:
-    def __init__(self, input_dir, destination_dir, trigger_word):
+    def __init__(self, input_dir, destination_dir, trigger_word, target_size=1024):
         self.output_dir = destination_dir
         self.__attr = input_dir
         self.trigger_word = trigger_word
+        self.target_size = target_size
         # Crear directorio de salida si no existe
         os.makedirs(self.output_dir, exist_ok=True)
         
@@ -65,7 +66,7 @@ Return ONLY the caption."""
                         continue
 
                     # Normalizar la imagen
-                    self.square_image_1024(image, image_path, counter)
+                    self.square_image(image, image_path, counter, size=(self.target_size, self.target_size))
                     counter += 1
 
                 except cv2.error as e:
@@ -79,8 +80,8 @@ Return ONLY the caption."""
             print("\nData normalization interrupted by the user.")
             sys.exit(0)
 
-    def square_image_1024(self, img, image_path, counter, size=(1024, 1024)):
-        """Convierte la imagen a cuadrada de 1024x1024 y genera caption"""
+    def square_image(self, img, image_path, counter, size=(1024, 1024)):
+        """Convierte la imagen a cuadrada de size x size y genera caption"""
         # Definir ruta de salida
         output_image_path = os.path.join(self.output_dir, f"n_{counter}.png")
         

@@ -79,6 +79,7 @@ class LoraUtils:
                 self.createConfigJson_15()
                 self.createConfigJsonXL()
                 self.createConfigJsonFlux()
+                self.createConfigYamlTurbo()
                 self.set_lora_keyword()
             else:
                 print("Folder already exists")
@@ -144,6 +145,73 @@ class LoraUtils:
         data[136] = self.sample_prompts + "\n"
 
         self.set_to_disk(data, "flux")
+        return
+
+    def createConfigYamlTurbo(self):
+        try:
+            with open('LoraD13_zImageTurbo.yaml', 'r') as file:
+                data = file.readlines()
+
+            # Prepare paths in WSL format
+            lora_base_path = Path(self.lora.path) / self.lora.lora_name
+            # The training_folder in YAML seems to be the root output folder where the extension will create its own subfolders?
+            # Or should it be the specific model folder?
+            # Based on the template: "training_folder": "/mnt/c/Users/D13/Desktop/Ostris/ai-toolkit/output"
+            # It seems to be a general output folder.
+            # But Loralizer creates specific folders.
+            # Let's point it to the 'model_turbo' or just the base lora folder?
+            # The template uses a generic output folder.
+            # Let's align with the JSON strategy: point to the versioned folder.
+            
+            # Construct equivalent paths
+            # self.lora.path e.g. D:\dev\PythonCV
+            # lora_base_path e.g. D:\dev\PythonCV\MyLora
+            
+            # The training_folder will likely be where ai-toolkit dumps results.
+            # Let's use the 'model_flux' equivalent but for turbo, or just the base of this version.
+            # Let's create a 'output' folder inside our structure if needed, or use the existing structure.
+            # The YAML 'training_folder' is where the 'name' (vu_4ss) folder will be created.
+            
+            # Let's use the root of the versioned lora folder as the training folder, so ai-toolkit creates the folder there.
+            version_folder = Path(self.lora.path) / f"{self.lora.lora_version}_lora_{self.lora.LORA}"
+            wsl_training_folder = FileUtils.to_wsl_path(str(version_folder))
+            
+            # Image folder
+            img_folder = version_folder / "image"
+            wsl_img_folder = FileUtils.to_wsl_path(str(img_folder))
+
+            # Update Lines
+            # Line 4: name: "vu_4ss" -> name: "{self.lora.LORA}"
+            data[3] = f'  name: "{self.lora.LORA}"\n'
+            
+            # Line 7: training_folder
+            data[6] = f'      training_folder: "{wsl_training_folder}"\n'
+            
+            # Line 10: trigger_word
+            data[9] = f'      trigger_word: "{self.lora.LORA}"\n'
+            
+            # Line 29: folder_path
+            data[28] = f'        - folder_path: "{wsl_img_folder}"\n'
+            
+            # Line 97, 98: samples
+            # We will use the sample prompt we have
+            prompt = FileUtils.getInitialPrompt(str(img_folder))
+            if prompt:
+                # Basic cleaning if needed, but getInitialPrompt returns a string
+                full_prompt = f"{self.lora.LORA}, {prompt}" 
+                data[96] = f'          - prompt: "{full_prompt}"\n'
+                data[97] = f'          - prompt: "{full_prompt}"\n'
+
+            # Write to disk
+            # filename: lora_config_{name}_turbo.yaml
+            config_file = Path(self.lora.path) / self.lora.lora_name / \
+                f'lora_config_{self.lora.LORA}_turbo.yaml'
+            
+            with open(config_file, 'w', encoding='utf-8') as file:
+                file.writelines(data)
+                
+        except Exception as e:
+            print(f"Error creating Turbo YAML: {e}")
         return
 
     def get_initial_config(self):

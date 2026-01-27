@@ -60,7 +60,7 @@ class App(ctk.CTk):
     
     def _configure_window(self):
         """Configura las propiedades de la ventana principal."""
-        self.title("LoRA Dataset Helper")
+        self.title("Loralizer13")
         self.geometry(f"{self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}")
         
         # Configurar grid responsivo
@@ -108,12 +108,29 @@ class App(ctk.CTk):
         # Botones de herramientas
         self.btn_normalize = ctk.CTkButton(
             self.sidebar,
-            text="📐 Normalize to 1024×1024",
+            text="📐 Normalize",
             command=self._run_normalizer,
             height=self.BUTTON_HEIGHT,
             font=ctk.CTkFont(size=12)
         )
         self.btn_normalize.grid(row=4, column=0, padx=self.PADDING, pady=5, sticky="ew")
+
+        # Resolution Selector
+        ctk.CTkLabel(
+            self.sidebar,
+            text="Resolution:",
+            font=ctk.CTkFont(size=12)
+        ).grid(row=5, column=0, padx=self.PADDING, pady=(5, 0), sticky="w")
+
+        self.resolution_var = ctk.StringVar(value="1024")
+        self.resolution_combo = ctk.CTkComboBox(
+            self.sidebar,
+            values=["1024", "1280", "1536"],
+            variable=self.resolution_var,
+            height=self.BUTTON_HEIGHT,
+            font=ctk.CTkFont(size=12)
+        )
+        self.resolution_combo.grid(row=6, column=0, padx=self.PADDING, pady=(0, 5), sticky="ew")
         
         self.btn_augment = ctk.CTkButton(
             self.sidebar,
@@ -123,7 +140,7 @@ class App(ctk.CTk):
             font=ctk.CTkFont(size=12),
             state="disabled"  # Placeholder para futura implementación
         )
-        self.btn_augment.grid(row=5, column=0, padx=self.PADDING, pady=5, sticky="ew")
+        self.btn_augment.grid(row=7, column=0, padx=self.PADDING, pady=5, sticky="ew")
         
         # Información de versión
         version_label = ctk.CTkLabel(
@@ -286,7 +303,13 @@ class App(ctk.CTk):
             # Mostrar ventana de progreso
             progress_window = self._show_progress_window("Normalizing images...")
             
-            NormalizerC(input_dir, self.normalizer_path, self.lora_name)
+            # Get selected resolution
+            try:
+                target_res = int(self.resolution_var.get())
+            except ValueError:
+                target_res = 1024
+
+            NormalizerC(input_dir, self.normalizer_path, self.lora_name, target_size=target_res)
             
             progress_window.destroy()
             
@@ -556,7 +579,7 @@ class App(ctk.CTk):
    • Example: "character_style" or "my_avatar"
 
 2. Normalize Images (Recommended)
-   • Click "Normalize to 1024×1024" in the sidebar
+   • Click "Normalize" in the sidebar
    • Select folder containing your original images
    • Images will be resized and centered automatically
    • Captions will be generated using AI

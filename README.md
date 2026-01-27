@@ -1,16 +1,16 @@
-# PythonCV
+# Loralizer13
 Batch Image Manager
 
 
 # TODO
 
--- build a unified user interface with tabs to manage each necessary step
+[x] build a unified user interface with tabs to manage each necessary step
 
--- add batch functionality to include the key captionings on the init for pre process .txt captionings
+[x] add batch functionality to include the key captionings on the init for pre process .txt captionings
 
--- call the preprocess procedure (WD14, Blip) captionings from this application
+[x] call the preprocess procedure (WD14, Blip) captionings from this application - ollama now
 
--- learning more quickly and effectively Loras Loras
+[x] learning more quickly and effectively Loras Loras - image with proto model 
 
 ---
 

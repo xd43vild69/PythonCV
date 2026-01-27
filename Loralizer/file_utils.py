@@ -71,3 +71,13 @@ class FileUtils:
             return None
 
         return data
+
+    @staticmethod
+    def to_wsl_path(path):
+        if not path:
+            return ""
+        path = path.replace("\\", "/")
+        if ":" in path:
+            drive, rest = path.split(":", 1)
+            return f"/mnt/{drive.lower()}{rest}"
+        return path
